@@ -1,0 +1,52 @@
+<form #schemaForm="ngForm">
+    <label class="form-label" for="warmup">Warmup (min)</label>
+    <input class="form-range" type="range" min="0" max="60" step="5" id="warmup" [(ngModel)]="schema.warmup"
+        name="formWarmup" />
+    <div class="form-text">{{schema.warmup}} minutes</div>
+    <hr />
+    <ol class="list-group list-group-numbered list-group-flush">
+        <li class="list-group-item d-flex justify-content-between align-items-center"
+            *ngFor="let exercise of schema.exercises">
+            Reps {{exercise.reps}} & Sets {{exercise.sets}}
+            <button class="btn btn-secondary" title="Remove excercise" (click)="removeExercise(exercise)">-</button>
+        </li>
+    </ol>
+
+    <label class="form-label" for="reps">Reps</label>
+    <div class="input-group input-group-lg mb-3">
+        <button class="btn btn-secondary" type="button" title="Minus rep" (click)="minusRep()">-</button>
+        <input class="form-control" type="number" id="reps" [(ngModel)]="schema.exercise.reps" name="formReps" />
+        <button class="btn btn-secondary" type="button" title="Plus rep" (click)="plusRep()">+</button>
+    </div>
+
+    <label class="form-label" for="Sets">Sets</label>
+    <div class="input-group input-group-lg mb-3">
+        <button class="btn btn-secondary" type="button" title="Minus set" (click)="minusSet()">-</button>
+        <input class="form-control" type="number" id="Sets" [(ngModel)]="schema.exercise.sets" name="formSets" />
+        <button class="btn btn-secondary" type="button" title="Plus set" (click)="plusSet()">+</button>
+    </div>
+    <button class="btn btn-secondary btn-add-exercise mb-3" title="Add exercise" (click)="addExercise()">+ Add
+        exercise</button>
+
+    <label class="form-label" for="pauseReps">Pause between reps (sec)</label>
+    <input class="form-range" type="range" min="0" max="120" step="10" id="pauseReps" [(ngModel)]="schema.pauseReps"
+        name="formPauseReps" />
+    <div class="form-text">{{schema.pauseReps}} seconds</div>
+    <label class="form-label" for="pauseSets">Pause between sets (sec)</label>
+    <input class="form-range" type="range" min="0" max="60" step="5" id="pauseSets" [(ngModel)]="schema.pauseSets"
+        name="formPauseSets" />
+    <div class="form-text">{{schema.pauseSets}} seconds</div>
+    <hr />
+    <label class="form-label" for="intervalReps">Interval repetitions</label>
+    <input class="form-control" type="number" min="0" max="30" id="intervalReps" [(ngModel)]="schema.intervalReps"
+        name="formIntervalReps" />
+    <label class="form-label" for="intervalDuration">Interval duration (sec)</label>
+    <input class="form-range" type="range" min="0" max="60" step="5" id="intervalDuration"
+        [(ngModel)]="schema.intervalDuration" name="formIntervalDuration" />
+    <div class="form-text">{{schema.intervalDuration}} seconds</div>
+    <label class="form-label" for="intervalPause">Interval pause (sec)</label>
+    <input class="form-range" type="range" min="0" max="30" step="5" id="intervalPause"
+        [(ngModel)]="schema.intervalPause" name="formIntervalPause" />
+    <div class="form-text">{{schema.intervalPause}} seconds</div>
+    <button class="btn btn-primary" title="Save schema" (click)="save.emit(schema)">Save schema</button>
+</form>

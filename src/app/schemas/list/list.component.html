@@ -1,0 +1,10 @@
+<p *ngIf="schemas.length === 0">No schema's found.</p>
+
+<ng-container *ngFor="let schema of schemas">
+    <p>Warmup {{schema.warmup}} minutes</p>
+    <ng-container *ngFor="let exercise of schema.exercises">
+        <p>{{exercise.reps}} reps of {{exercise.sets}} sets</p>
+    </ng-container>
+    <p>with {{schema.pauseSets}} seconds between reps and {{schema.pauseReps}} seconds between exercise</p>
+    <p>{{schema.intervalReps}} x interval {{schema.intervalDuration}} seconds on and {{schema.intervalPause}} seconds off</p>
+</ng-container>

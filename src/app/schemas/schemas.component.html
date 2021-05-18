@@ -1,0 +1,5 @@
+<h2>Schema's</h2>
+<app-schemas-list *ngIf="!create" [schemas]="schemas"></app-schemas-list>
+<button class="btn btn-primary" *ngIf="!create" (click)="createSchema()" title="+ Create schema">+ Create schema</button>
+
+<app-schemas-create *ngIf="create" (save)="save($event)"></app-schemas-create>
