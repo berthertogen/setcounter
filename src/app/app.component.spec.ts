@@ -1,6 +1,7 @@
 import { FormsModule } from '@angular/forms';
 import { render } from '@testing-library/angular'
 import { AppComponent } from './app.component';
+import { MaterialModule } from './material.module';
 import { SchemasListComponent } from './schemas/list/list.component';
 import { SchemasCreateComponent } from './schemas/schema/create/create.component';
 import { SchemasComponent } from './schemas/schemas.component';
@@ -16,7 +17,7 @@ describe('AppComponent', () => {
   async function createComponent() {
     const rendered = await render(AppComponent, {
       declarations: [SchemasComponent, SchemasCreateComponent, SchemasListComponent],
-      imports: [FormsModule]
+      imports: [FormsModule, MaterialModule]
     });
     return {
       ...rendered,

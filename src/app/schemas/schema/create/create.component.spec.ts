@@ -1,6 +1,7 @@
 import { FormsModule } from '@angular/forms';
 import { fireEvent, render } from '@testing-library/angular'
 import userEvent from '@testing-library/user-event'
+import { MaterialModule } from 'src/app/material.module';
 import { ExerciseDefault, Schema } from 'src/app/schemas/schema/schema';
 import { SchemasCreateComponent } from './create.component';
 
@@ -8,7 +9,7 @@ describe('CreateComponent', () => {
   test('should show warmup range, reps, sets, add exercise when clicking the create schema button', async () => {
     const { getByText, getByLabelText } = await createComponent();
 
-    expect(getByLabelText('Warmup (min)')).toBeDefined();
+    expect(getByLabelText('Warmup')).toBeDefined();
     expect(getByLabelText('Reps')).toBeDefined();
     expect(getByLabelText('Sets')).toBeDefined();
     expect(getByText('+ Add exercise')).toBeDefined();
@@ -20,9 +21,9 @@ describe('CreateComponent', () => {
   });
 
   test('should update warmup value when sliding the range', async () => {
-    const { getByText, change, fixture } = await createComponent();
+    const { getByText, changeSlider, fixture } = await createComponent();
 
-    change('Warmup (min)', '10');
+    changeSlider('Warmup', 2);
 
     expect(fixture.componentInstance.schema.warmup).toBe(10);
     expect(getByText('10 minutes')).toBeDefined();
@@ -149,9 +150,9 @@ describe('CreateComponent', () => {
   });
 
   test('should emit output when save schema is clicked', async () => {
-    const { type, click, clickByTitle, change, saveNthCalledWith } = await createComponent();
+    const { type, click, clickByTitle, change, changeSlider, saveNthCalledWith } = await createComponent();
 
-    change('Warmup (min)', '10');
+    changeSlider('Warmup', 2);
 
     clickByTitle('Plus rep', 4);
     clickByTitle('Plus set', 12);
@@ -187,7 +188,7 @@ describe('CreateComponent', () => {
   async function createComponent() {
     const saveEmitSpy = jest.fn();
     const rendered = await render(SchemasCreateComponent, { 
-      imports: [FormsModule],
+      imports: [FormsModule, MaterialModule],
       componentProperties: {
         save: {
           emit: saveEmitSpy,
@@ -210,6 +211,11 @@ describe('CreateComponent', () => {
         userEvent.click(rendered.getAllByTitle(title)[indexToClick]);
       },
       change: (label: string, value: string) => fireEvent.change(rendered.getByLabelText(label), { target: { value } }),
+      changeSlider: (label: string, addSteps: number) => {
+        const input = rendered.getByLabelText(label);
+        const keys = [...Array(addSteps).keys()].map(() => '{arrowright}');
+        userEvent.type(input, keys.join());
+      },
       type: (label: string, value: string) => userEvent.type(rendered.getByLabelText(label), value),
       saveNthCalledWith: (times: number, schema: Schema) => expect(saveEmitSpy).toHaveBeenNthCalledWith(times, schema),
     };

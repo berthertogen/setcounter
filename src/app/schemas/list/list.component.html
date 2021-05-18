@@ -1,10 +1,24 @@
-<p *ngIf="schemas.length === 0">No schema's found.</p>
+<mat-card *ngIf="schemas.length === 0">
+    <p>No schema's found.</p>
+</mat-card>
 
 <ng-container *ngFor="let schema of schemas">
-    <p>Warmup {{schema.warmup}} minutes</p>
-    <ng-container *ngFor="let exercise of schema.exercises">
-        <p>{{exercise.reps}} reps of {{exercise.sets}} sets</p>
-    </ng-container>
-    <p>with {{schema.pauseSets}} seconds between reps and {{schema.pauseReps}} seconds between exercise</p>
-    <p>{{schema.intervalReps}} x interval {{schema.intervalDuration}} seconds on and {{schema.intervalPause}} seconds off</p>
+    <mat-card>
+        <mat-card-content>
+            <p>Warmup {{schema.warmup}} minutes</p>
+            <mat-divider></mat-divider>
+            <ng-container *ngFor="let exercise of schema.exercises">
+                <p>{{exercise.reps}} reps of {{exercise.sets}} sets</p>
+            </ng-container>
+            <p>with {{schema.pauseSets}} seconds between reps and {{schema.pauseReps}} seconds between exercise</p>
+            <mat-divider></mat-divider>
+            <p>{{schema.intervalReps}} x interval {{schema.intervalDuration}} seconds on and {{schema.intervalPause}}
+                seconds off</p>
+        </mat-card-content>
+        <mat-card-actions>
+            <button mat-icon-button title="- Delete schema" (click)="delete.emit(schema)">
+                <mat-icon>delete</mat-icon>
+            </button>
+        </mat-card-actions>
+    </mat-card>
 </ng-container>

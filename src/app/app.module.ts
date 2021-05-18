@@ -7,6 +7,7 @@ import { SchemasComponent } from './schemas/schemas.component';
 import { SchemasCreateComponent } from './schemas/schema/create/create.component';
 import { SchemasListComponent } from './schemas/list/list.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MaterialModule } from './material.module';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     BrowserModule,
     FormsModule,
     ReactiveFormsModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    MaterialModule
   ],
   providers: [],
   bootstrap: [AppComponent]

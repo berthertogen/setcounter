@@ -1,4 +1,4 @@
-import { Component, HostBinding, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, HostBinding, Input, OnInit, Output } from '@angular/core';
 import { Schema } from 'src/app/schemas/schema/schema';
 
 @Component({
@@ -10,4 +10,6 @@ export class SchemasListComponent {
   @HostBinding('attr.data-testid')  dataTestid = 'app-schemas-list';
 
   @Input() schemas: Schema[] = [];
+
+  @Output() delete = new EventEmitter<Schema>();
 }

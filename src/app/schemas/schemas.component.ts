@@ -29,4 +29,10 @@ export class SchemasComponent implements OnInit {
     this.schemas.push(schema);
     localStorage.setItem('setcounter-schemas', JSON.stringify(this.schemas));
   }
+
+  delete(schema: Schema) {
+    const indexOf = this.schemas.indexOf(schema);
+    this.schemas.splice(indexOf, 1);
+    localStorage.setItem('setcounter-schemas', JSON.stringify(this.schemas));
+  }
 }

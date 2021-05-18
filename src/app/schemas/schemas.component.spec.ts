@@ -7,13 +7,14 @@ import { ExerciseDefault, Schema, SchemaDefault } from './schema/schema';
 import { Autofixture } from 'ts-autofixture/dist/src';
 
 import { SchemasComponent } from './schemas.component';
+import { MaterialModule } from '../material.module';
 
 describe('SchemasComponent', () => {
   test('should have title', async () => {
-    const { hasText, notHasByTestId, hasByTestId } = await createComponent();
+    const { hasText, hasTitle, notHasByTestId, hasByTestId } = await createComponent();
 
     hasText("Schema's");
-    hasText("+ Create schema");
+    hasTitle("+ Create schema");
     hasByTestId('app-schemas-list');
     notHasByTestId('app-schemas-create');
   });
@@ -27,28 +28,39 @@ describe('SchemasComponent', () => {
   });
 
   test('should load create schema component when + Create schema button is clicked', async () => {
-    const { click, hasByTestId, notHasByTestId, notHasText } = await createComponent();
-    click('+ Create schema');
+    const { clickByTitle, hasByTestId, notHasByTestId, notHasTitle } = await createComponent();
+    clickByTitle('+ Create schema');
 
-    notHasText("+ Create schema");
+    notHasTitle("+ Create schema");
     hasByTestId('app-schemas-create');
     notHasByTestId('app-schemas-list');
   });
 
   test('should load list schema component and add schema to list when Save schema event is fired', async () => {
     mockLocalStorage([]);
-    const { click, hasByTestId, notHasByTestId, hasText, hasTextCount, schemasSaved } = await createComponent();
+    const { clickByTitle, click, hasByTestId, notHasByTestId, hasTitle, hasTextCount, schemasSaved } = await createComponent();
 
-    click('+ Create schema');
+    clickByTitle('+ Create schema');
     click('Save schema');
-    click('+ Create schema');
+    clickByTitle('+ Create schema');
     click('Save schema');
 
-    hasText("+ Create schema");
+    hasTitle("+ Create schema");
     notHasByTestId('app-schemas-create');
     hasByTestId('app-schemas-list');
     hasTextCount('Warmup 0 minutes', 2);
     schemasSaved(2, [[new SchemaDefault()], [new SchemaDefault(), new SchemaDefault()]]);
+  });
+
+  test('should remove schema from list when Delete schema event is fired', async () => {
+    const schemas = mockSchemas();
+    mockLocalStorage(schemas);
+    const { clickNthByTitle, schemasSaved } = await createComponent();
+
+    clickNthByTitle('- Delete schema', 0);
+
+    schemas.splice(0,1); 
+    schemasSaved(1, [schemas]);
   });
 
   const getItem = jest.fn();
@@ -72,7 +84,7 @@ describe('SchemasComponent', () => {
   async function createComponent() {
     const rendered = await render(SchemasComponent, {
       declarations: [SchemasCreateComponent, SchemasListComponent],
-      imports: [FormsModule]
+      imports: [FormsModule, MaterialModule]
     });
     return createComponentWithExtras(rendered);
   }
@@ -87,7 +99,11 @@ describe('SchemasComponent', () => {
     });
     return {
       ...rendered,
+      clickByTitle: (title: string) => userEvent.click(rendered.getByTitle(title)),
+      clickNthByTitle: (text: string, index: number) => userEvent.click(rendered.getAllByTitle(text)[index]),
       click: (text: string) => userEvent.click(rendered.getByText(text)),
+      hasTitle: (text: string) => rendered.getByTitle(text),
+      notHasTitle: (text: string) => expect(rendered.queryByTitle(text)).toBeNull(),
       hasText: (text: string) => rendered.getByText(text),
       notHasText: (text: string) => expect(rendered.queryByText(text)).toBeNull(),
       hasByTestId: (testId: string) => rendered.getByTestId(testId),
