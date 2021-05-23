@@ -4,8 +4,8 @@ export interface Exercise {
 }
 
 export class ExerciseDefault implements Exercise {
-    reps = 0;
-    sets = 0;
+    reps = 3;
+    sets = 12;
 }
 
 export interface Schema {
@@ -20,12 +20,12 @@ export interface Schema {
 }
 
 export class SchemaDefault implements Schema {
-    warmup = 0;
+    warmup = 10;
     exercise = new ExerciseDefault();
     exercises = [];
-    pauseReps = 0;
-    pauseSets = 0;
-    intervalReps = 0;
-    intervalDuration = 0;
-    intervalPause = 0;
+    pauseReps = 60;
+    pauseSets = 30;
+    intervalReps = 14;
+    intervalDuration = 20;
+    intervalPause = 10;
 }

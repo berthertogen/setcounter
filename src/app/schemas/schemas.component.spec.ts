@@ -48,7 +48,7 @@ describe('SchemasComponent', () => {
     hasTitle("+ Create schema");
     notHasByTestId('app-schemas-create');
     hasByTestId('app-schemas-list');
-    hasTextCount('Warmup 0 minutes', 2);
+    hasTextCount('Warmup 10 minutes', 2);
     schemasSaved(2, [[new SchemaDefault()], [new SchemaDefault(), new SchemaDefault()]]);
   });
 

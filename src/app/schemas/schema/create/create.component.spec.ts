@@ -9,21 +9,35 @@ describe('CreateComponent', () => {
   test('should show warmup range, reps, sets, add exercise when clicking the create schema button', async () => {
     const { getByText, getByLabelText } = await createComponent();
 
-    expect(getByLabelText('Warmup')).toBeDefined();
+    expect(getByLabelText('Warmup duration (sec)')).toBeDefined();
     expect(getByLabelText('Reps')).toBeDefined();
     expect(getByLabelText('Sets')).toBeDefined();
+    expect(getByText('No exercises added yet.')).toBeDefined();
     expect(getByText('+ Add exercise')).toBeDefined();
     expect(getByLabelText('Pause between reps (sec)')).toBeDefined();
     expect(getByLabelText('Pause between sets (sec)')).toBeDefined();
-    expect(getByLabelText('Interval repetitions')).toBeDefined();
+    expect(getByLabelText('Interval reps')).toBeDefined();
     expect(getByLabelText('Interval duration (sec)')).toBeDefined();
     expect(getByLabelText('Interval pause (sec)')).toBeDefined();
+  });
+
+  test('should show default values', async () => {
+    const { fixture } = await createComponent();
+
+    expect(fixture.componentInstance.schema.warmup).toBe(10);
+    expect(fixture.componentInstance.schema.exercise.reps).toBe(3);
+    expect(fixture.componentInstance.schema.exercise.sets).toBe(12);
+    expect(fixture.componentInstance.schema.pauseReps).toBe(60);
+    expect(fixture.componentInstance.schema.pauseSets).toBe(30);
+    expect(fixture.componentInstance.schema.intervalReps).toBe(14);
+    expect(fixture.componentInstance.schema.intervalDuration).toBe(20);
+    expect(fixture.componentInstance.schema.intervalPause).toBe(10);
   });
 
   test('should update warmup value when sliding the range', async () => {
     const { getByText, changeSlider, fixture } = await createComponent();
 
-    changeSlider('Warmup', 2);
+    changeSlider('Warmup duration (sec)', 2);
 
     expect(fixture.componentInstance.schema.warmup).toBe(10);
     expect(getByText('10 minutes')).toBeDefined();
@@ -40,11 +54,11 @@ describe('CreateComponent', () => {
   test('should update reps value when clicking plus or minus the reps', async () => {
     const { clickByTitle, fixture } = await createComponent();
 
-    clickByTitle('Plus rep', 4);
+    clickByTitle('Plus rep', 2);
 
-    expect(fixture.componentInstance.schema.exercise.reps).toBe(4);
+    expect(fixture.componentInstance.schema.exercise.reps).toBe(5);
 
-    clickByTitle('Minus rep', 2);
+    clickByTitle('Minus rep', 3);
 
     expect(fixture.componentInstance.schema.exercise.reps).toBe(2);
   });
@@ -62,62 +76,64 @@ describe('CreateComponent', () => {
 
     clickByTitle('Plus set', 4);
 
-    expect(fixture.componentInstance.schema.exercise.sets).toBe(4);
+    expect(fixture.componentInstance.schema.exercise.sets).toBe(16);
 
     clickByTitle('Minus set', 2);
 
-    expect(fixture.componentInstance.schema.exercise.sets).toBe(2);
+    expect(fixture.componentInstance.schema.exercise.sets).toBe(14);
   });
 
   test('should add exercise to list and clear form when clicking Add exercise', async () => {
-    const { getByText, fixture, click, clickByTitle } = await createComponent();
+    const { getByText, queryByText, fixture, click, clickByTitle } = await createComponent();
 
-    clickByTitle('Plus rep', 4);
-    clickByTitle('Plus set', 12);
+    clickByTitle('Plus rep', 1);
+    clickByTitle('Plus set', 1);
     click('+ Add exercise');
 
-    getByText("Reps 4 & Sets 12");
+    expect(queryByText('No exercises added yet.')).toBeNull();
+    getByText("Reps 4 & Sets 13");
 
-    expect(fixture.componentInstance.schema.exercise.reps).toBe(0);
-    expect(fixture.componentInstance.schema.exercise.sets).toBe(0);
+    expect(fixture.componentInstance.schema.exercise.reps).toBe(3);
+    expect(fixture.componentInstance.schema.exercise.sets).toBe(12);
   });
 
   test('should remove excercise when user clicks on the - in the list', async () => {
     const { queryAllByText, click, clickByTitle, clickAllByTitle } = await createComponent();
 
-    clickByTitle('Plus rep', 4);
-    clickByTitle('Plus set', 12);
+    clickByTitle('Plus rep', 1);
+    clickByTitle('Plus set', 1);
     click('+ Add exercise');
 
-    clickByTitle('Plus rep', 4);
-    clickByTitle('Plus set', 12);
+    clickByTitle('Plus rep', 1);
+    clickByTitle('Plus set', 1);
     click('+ Add exercise');
 
-    clickByTitle('Plus rep', 3);
-    clickByTitle('Plus set', 15);
+    clickByTitle('Plus rep', 2);
+    clickByTitle('Plus set', 2);
     click('+ Add exercise');
 
-    expect(queryAllByText("Reps 4 & Sets 12").length).toBe(2);
+    expect(queryAllByText("Reps 4 & Sets 13").length).toBe(2);
+    expect(queryAllByText("Reps 5 & Sets 14").length).toBe(1);
 
     clickAllByTitle('Remove excercise', 1);
 
-    expect(queryAllByText("Reps 4 & Sets 12").length).toBe(1);
-    expect(queryAllByText("Reps 3 & Sets 15").length).toBe(1);
+    expect(queryAllByText("Reps 4 & Sets 13").length).toBe(1);
+    expect(queryAllByText("Reps 5 & Sets 14").length).toBe(1);
   });
 
   test('should update pauseReps value when sliding the range', async () => {
-    const { getByText, change, fixture } = await createComponent();
+    const { getByText, changeSlider, fixture } = await createComponent();
 
-    change('Pause between reps (sec)', '60');
+    changeSlider('Pause between reps (sec)', 6);
 
     expect(fixture.componentInstance.schema.pauseReps).toBe(60);
     expect(getByText('60 seconds')).toBeDefined();
   });
 
   test('should update pauseSets value when sliding the range', async () => {
-    const { getByText, change, fixture } = await createComponent();
+    const { getByText, changeSlider, fixture } = await createComponent();
 
-    change('Pause between sets (sec)', '30');
+    changeSlider('Pause between sets (sec)', 6);
 
     expect(fixture.componentInstance.schema.pauseSets).toBe(30);
     expect(getByText('30 seconds')).toBeDefined();
@@ -126,68 +142,80 @@ describe('CreateComponent', () => {
   test('should update intervalReps value when typing the intervalReps', async () => {
     const { type, fixture } = await createComponent();
 
-    type('Interval repetitions', '14');
+    type('Interval reps', '14');
 
     expect(fixture.componentInstance.schema.intervalReps).toBe(14);
-  })
+  });
+
+  test('should update intervalReps value when clicking plus or minus the intervalReps', async () => {
+    const { clickByTitle, fixture } = await createComponent();
+
+    clickByTitle('Plus interval reps', 1);
+
+    expect(fixture.componentInstance.schema.intervalReps).toBe(15);
+
+    clickByTitle('Minus interval reps', 2);
+
+    expect(fixture.componentInstance.schema.intervalReps).toBe(13);
+  });
 
   test('should update intervalDuration value when sliding the range', async () => {
-    const { getByText, change, fixture } = await createComponent();
+    const { getByText, changeSlider, fixture } = await createComponent();
 
-    change('Interval duration (sec)', '20');
+    changeSlider('Interval duration (sec)', 4);
 
     expect(fixture.componentInstance.schema.intervalDuration).toBe(20);
     expect(getByText('20 seconds')).toBeDefined();
   });
 
   test('should update intervalPause value when sliding the range', async () => {
-    const { getByText, change, fixture } = await createComponent();
+    const { getByText, changeSlider, fixture } = await createComponent();
 
-    change('Interval pause (sec)', '20');
+    changeSlider('Interval pause (sec)', 2);
 
-    expect(fixture.componentInstance.schema.intervalPause).toBe(20);
-    expect(getByText('20 seconds')).toBeDefined();
+    expect(fixture.componentInstance.schema.intervalPause).toBe(10);
+    expect(getByText('10 seconds')).toBeDefined();
   });
 
   test('should emit output when save schema is clicked', async () => {
-    const { type, click, clickByTitle, change, changeSlider, saveNthCalledWith } = await createComponent();
+    const { click, clickByTitle, changeSlider, saveNthCalledWith } = await createComponent();
 
-    changeSlider('Warmup', 2);
+    changeSlider('Warmup duration (sec)', 2);
 
-    clickByTitle('Plus rep', 4);
-    clickByTitle('Plus set', 12);
+    clickByTitle('Plus rep', 1);
+    clickByTitle('Plus set', 1);
     click('+ Add exercise');
 
-    clickByTitle('Plus rep', 3);
-    clickByTitle('Plus set', 15);
+    clickByTitle('Plus rep', 2);
+    clickByTitle('Plus set', 2);
     click('+ Add exercise');
-    change('Pause between reps (sec)', '60');
-    change('Pause between sets (sec)', '30');
+    changeSlider('Pause between reps (sec)', 6);
+    changeSlider('Pause between sets (sec)', 6);
 
-    type('Interval repetitions', '14');
-    change('Interval duration (sec)', '20');
-    change('Interval pause (sec)', '10');
+    clickByTitle('Plus interval reps', 1);
+    changeSlider('Interval duration (sec)', 4);
+    changeSlider('Interval pause (sec)', 2);
 
     click('Save schema');
 
     saveNthCalledWith(1, {
       warmup: 10,
       exercises: [
-        {reps: 4, sets: 12},
-        {reps: 3, sets: 15},
+        { reps: 4, sets: 13 },
+        { reps: 5, sets: 14 },
       ],
       exercise: new ExerciseDefault(),
       pauseReps: 60,
       pauseSets: 30,
-      intervalReps: 14,
+      intervalReps: 15,
       intervalDuration: 20,
-      intervalPause:10
+      intervalPause: 10
     })
   });
 
   async function createComponent() {
     const saveEmitSpy = jest.fn();
-    const rendered = await render(SchemasCreateComponent, { 
+    const rendered = await render(SchemasCreateComponent, {
       imports: [FormsModule, MaterialModule],
       componentProperties: {
         save: {
@@ -198,10 +226,6 @@ describe('CreateComponent', () => {
     return {
       ...rendered,
       click: (text: string) => userEvent.click(rendered.getByText(text)),
-      clickAndWait: async (text: string) => {
-        userEvent.click(rendered.getByText(text));
-        await rendered.fixture.whenStable();
-      },
       clickByTitle: (title: string, times?: number) => {
         for (let index = 0; index < (times || 1); index++) {
           userEvent.click(rendered.getByTitle(title))
@@ -210,13 +234,16 @@ describe('CreateComponent', () => {
       clickAllByTitle: (title: string, indexToClick: number) => {
         userEvent.click(rendered.getAllByTitle(title)[indexToClick]);
       },
-      change: (label: string, value: string) => fireEvent.change(rendered.getByLabelText(label), { target: { value } }),
       changeSlider: (label: string, addSteps: number) => {
         const input = rendered.getByLabelText(label);
         const keys = [...Array(addSteps).keys()].map(() => '{arrowright}');
         userEvent.type(input, keys.join());
       },
-      type: (label: string, value: string) => userEvent.type(rendered.getByLabelText(label), value),
+      type: (label: string, value: string) => {
+        const input = rendered.getByLabelText(label);
+        userEvent.clear(input);
+        userEvent.type(input, value);
+      },
       saveNthCalledWith: (times: number, schema: Schema) => expect(saveEmitSpy).toHaveBeenNthCalledWith(times, schema),
     };
   }

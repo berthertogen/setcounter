@@ -1,4 +1,4 @@
-import { Component, EventEmitter, HostBinding, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, HostBinding, Output } from '@angular/core';
 import { Exercise, ExerciseDefault, Schema, SchemaDefault } from 'src/app/schemas/schema/schema';
 
 @Component({
@@ -23,6 +23,12 @@ export class SchemasCreateComponent {
   }
   minusSet() {
     this.schema.exercise.sets--;
+  }
+  plusIntervalRep() {
+    this.schema.intervalReps++;
+  }
+  minusIntervalRep() {
+    this.schema.intervalReps--;
   }
 
   addExercise() {

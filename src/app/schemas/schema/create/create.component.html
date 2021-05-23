@@ -1,6 +1,6 @@
 <form #schemaForm="ngForm">
-
-    <h3 id="warmup">Warmup</h3>
+    <h2>Warmup</h2>
+    <label id="warmup">Warmup duration (sec)</label>
     <div class="slider">
         <mat-slider [max]="60" [min]="0" [step]="5" [thumbLabel]="true" [tickInterval]="1" [(ngModel)]="schema.warmup"
             name="formWarmup" aria-labelledby="warmup">
@@ -8,69 +8,97 @@
         <label>{{schema.warmup}} minutes</label>
     </div>
 
-    <hr />
-    <ol class="list-group list-group-numbered list-group-flush">
-        <li class="list-group-item d-flex justify-content-between align-items-center"
-            *ngFor="let exercise of schema.exercises">
-            Reps {{exercise.reps}} & Sets {{exercise.sets}}
-            <button class="btn btn-secondary" title="Remove excercise" (click)="removeExercise(exercise)">-</button>
-        </li>
-    </ol>
+    <mat-divider></mat-divider>
 
-    <h3>Exercises</h3>
+    <h2>Exercises</h2>
 
     <mat-list role="excercise">
-        <mat-list-item role="exercise" *ngFor="let exercise of schema.exercises">Reps {{exercise.reps}} & Sets
-            {{exercise.sets}}</mat-list-item>
+        <mat-list-item *ngIf="schema.exercises.length <= 0">No exercises added yet.</mat-list-item>
+        <mat-list-item role="exercise" *ngFor="let exercise of schema.exercises">
+            <span matLine>Reps {{exercise.reps}} & Sets {{exercise.sets}}</span>
+            <button mat-icon-button title="Remove excercise" (click)="removeExercise(exercise)">
+                <mat-icon>delete</mat-icon>
+            </button>
+        </mat-list-item>
     </mat-list>
 
     <div class="counter">
         <button mat-mini-fab type="button" title="Minus rep" (click)="minusRep()">
-            <mat-icon>add</mat-icon>
+            <mat-icon>remove</mat-icon>
         </button>
         <mat-form-field appearance="fill">
             <mat-label>Reps</mat-label>
             <input matInput type="number" id="reps" [(ngModel)]="schema.exercise.reps" name="formReps" />
         </mat-form-field>
         <button mat-mini-fab type="button" title="Plus rep" (click)="plusRep()">
-            <mat-icon>remove</mat-icon>
+            <mat-icon>add</mat-icon>
         </button>
     </div>
 
     <div class="counter">
         <button mat-mini-fab type="button" title="Minus set" (click)="minusSet()">
-            <mat-icon>add</mat-icon>
+            <mat-icon>remove</mat-icon>
         </button>
         <mat-form-field appearance="fill">
             <mat-label>Sets</mat-label>
-            <input matInput type="number" id="Sets" [(ngModel)]="schema.exercise.sets" name="formSets" />
+            <input matInput type="number" id="sets" [(ngModel)]="schema.exercise.sets" name="formSets" />
         </mat-form-field>
         <button mat-mini-fab type="button" title="Plus set" (click)="plusSet()">
-            <mat-icon>remove</mat-icon>
+            <mat-icon>add</mat-icon>
         </button>
     </div>
 
-    <button mat-button color="accent" title="Add exercise" (click)="addExercise()">+ Add exercise</button>
+    <button mat-button class="btn-add-exercise" color="accent" title="Add exercise" (click)="addExercise()">+ Add
+        exercise</button>
 
-    <label class="form-label" for="pauseReps">Pause between reps (sec)</label>
-    <input class="form-range" type="range" min="0" max="120" step="10" id="pauseReps" [(ngModel)]="schema.pauseReps"
-        name="formPauseReps" />
-    <div class="form-text">{{schema.pauseReps}} seconds</div>
-    <label class="form-label" for="pauseSets">Pause between sets (sec)</label>
-    <input class="form-range" type="range" min="0" max="60" step="5" id="pauseSets" [(ngModel)]="schema.pauseSets"
-        name="formPauseSets" />
-    <div class="form-text">{{schema.pauseSets}} seconds</div>
-    <hr />
-    <label class="form-label" for="intervalReps">Interval repetitions</label>
-    <input class="form-control" type="number" min="0" max="30" id="intervalReps" [(ngModel)]="schema.intervalReps"
-        name="formIntervalReps" />
-    <label class="form-label" for="intervalDuration">Interval duration (sec)</label>
-    <input class="form-range" type="range" min="0" max="60" step="5" id="intervalDuration"
-        [(ngModel)]="schema.intervalDuration" name="formIntervalDuration" />
-    <div class="form-text">{{schema.intervalDuration}} seconds</div>
-    <label class="form-label" for="intervalPause">Interval pause (sec)</label>
-    <input class="form-range" type="range" min="0" max="30" step="5" id="intervalPause"
-        [(ngModel)]="schema.intervalPause" name="formIntervalPause" />
-    <div class="form-text">{{schema.intervalPause}} seconds</div>
-    <button class="btn btn-primary" title="Save schema" (click)="save.emit(schema)">Save schema</button>
+    <label id="pauseReps">Pause between reps (sec)</label>
+    <div class="slider">
+        <mat-slider [max]="120" [min]="0" [step]="10" [thumbLabel]="true" [tickInterval]="1"
+            [(ngModel)]="schema.pauseReps" name="formPauseReps" aria-labelledby="pauseReps">
+        </mat-slider>
+        <label>{{schema.pauseReps}} seconds</label>
+    </div>
+
+    <label id="pauseSets">Pause between sets (sec)</label>
+    <div class="slider">
+        <mat-slider [max]="60" [min]="0" [step]="5" [thumbLabel]="true" [tickInterval]="1"
+            [(ngModel)]="schema.pauseSets" name="formPauseSets" aria-labelledby="pauseSets">
+        </mat-slider>
+        <label>{{schema.pauseSets}} seconds</label>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <h2>Interval</h2>
+
+    <div class="counter">
+        <button mat-mini-fab type="button" title="Minus interval reps" (click)="minusIntervalRep()">
+            <mat-icon>remove</mat-icon>
+        </button>
+        <mat-form-field appearance="fill">
+            <mat-label>Interval reps</mat-label>
+            <input matInput type="number" id="intervalReps" [(ngModel)]="schema.intervalReps" name="formIntervalReps" />
+        </mat-form-field>
+        <button mat-mini-fab type="button" title="Plus interval reps" (click)="plusIntervalRep()">
+            <mat-icon>add</mat-icon>
+        </button>
+    </div>
+
+    <label id="intervalDuration">Interval duration (sec)</label>
+    <div class="slider">
+        <mat-slider [max]="60" [min]="0" [step]="5" [thumbLabel]="true" [tickInterval]="1"
+            [(ngModel)]="schema.intervalDuration" name="formIntervalDuration" aria-labelledby="intervalDuration">
+        </mat-slider>
+        <label>{{schema.intervalDuration}} seconds</label>
+    </div>
+
+    <label id="intervalPause">Interval pause (sec)</label>
+    <div class="slider">
+        <mat-slider [max]="60" [min]="0" [step]="5" [thumbLabel]="true" [tickInterval]="1"
+            [(ngModel)]="schema.intervalPause" name="formIntervalPause" aria-labelledby="intervalPause">
+        </mat-slider>
+        <label>{{schema.intervalPause}} seconds</label>
+    </div>
+
+    <button mat-flat-button color="primary" class="btn-save" title="Save schema" (click)="save.emit(schema)">Save schema</button>
 </form>
