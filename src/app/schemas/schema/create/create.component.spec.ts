@@ -16,8 +16,8 @@ describe('CreateComponent - overall', () => {
     expect(getByLabelText('Sets')).toBeDefined();
     expect(getByText('No exercises added yet.')).toBeDefined();
     expect(getByText('+ Add exercise')).toBeDefined();
+    expect(getByLabelText('Pause between exercise (sec)')).toBeDefined();
     expect(getByLabelText('Pause between reps (sec)')).toBeDefined();
-    expect(getByLabelText('Pause between sets (sec)')).toBeDefined();
     expect(getByLabelText('Interval reps')).toBeDefined();
     expect(getByLabelText('Interval duration (sec)')).toBeDefined();
     expect(getByLabelText('Interval pause (sec)')).toBeDefined();
@@ -29,8 +29,8 @@ describe('CreateComponent - overall', () => {
     expect(fixture.componentInstance.schema.warmup).toBe(10);
     expect(fixture.componentInstance.schema.exercise.reps).toBe(3);
     expect(fixture.componentInstance.schema.exercise.sets).toBe(12);
-    expect(fixture.componentInstance.schema.pauseReps).toBe(60);
-    expect(fixture.componentInstance.schema.pauseSets).toBe(30);
+    expect(fixture.componentInstance.schema.pauseExercise).toBe(60);
+    expect(fixture.componentInstance.schema.pauseReps).toBe(30);
     expect(fixture.componentInstance.schema.intervalReps).toBe(14);
     expect(fixture.componentInstance.schema.intervalDuration).toBe(20);
     expect(fixture.componentInstance.schema.intervalPause).toBe(10);
@@ -48,8 +48,8 @@ describe('CreateComponent - overall', () => {
     clickByTitle('Plus rep', 2);
     clickByTitle('Plus set', 2);
     click('+ Add exercise');
+    changeSlider('Pause between exercise (sec)', 6);
     changeSlider('Pause between reps (sec)', 6);
-    changeSlider('Pause between sets (sec)', 6);
 
     clickByTitle('Plus interval reps', 1);
     changeSlider('Interval duration (sec)', 4);
@@ -64,8 +64,8 @@ describe('CreateComponent - overall', () => {
         { reps: 4, sets: 13 },
         { reps: 5, sets: 14 },
       ],
-      pauseReps: 60,
-      pauseSets: 30,
+      pauseExercise: 60,
+      pauseReps: 30,
       intervalReps: 15,
       intervalDuration: 20,
       intervalPause: 10
@@ -85,8 +85,8 @@ describe('CreateComponent - overall', () => {
     clickByTitle('Plus rep', 2);
     clickByTitle('Plus set', 2);
     click('+ Add exercise');
+    changeSlider('Pause between exercise (sec)', 6);
     changeSlider('Pause between reps (sec)', 6);
-    changeSlider('Pause between sets (sec)', 6);
 
     clickByTitle('Plus interval reps', 1);
     changeSlider('Interval duration (sec)', 4);
@@ -101,8 +101,8 @@ describe('CreateComponent - overall', () => {
         { reps: 4, sets: 13 },
         { reps: 5, sets: 14 },
       ],
-      pauseReps: 60,
-      pauseSets: 30,
+      pauseExercise: 60,
+      pauseReps: 30,
       intervalReps: 15,
       intervalDuration: 20,
       intervalPause: 10
@@ -110,6 +110,14 @@ describe('CreateComponent - overall', () => {
     schemasSaved(1, [schemas]);
     navigatedToList();
   });
+
+  test('should navigate to list when cancel is clicked', async () => {
+    const { click, navigatedToList } = await createComponent();
+
+    click("Cancel");
+
+    navigatedToList();
+  }); 
 
   async function createComponent() {
     return await createComponentWithExtras([]);

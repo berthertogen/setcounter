@@ -10,7 +10,7 @@
             <ng-container *ngFor="let exercise of schema.exercises">
                 <p>{{exercise.reps}} reps of {{exercise.sets}} sets</p>
             </ng-container>
-            <p>with {{schema.pauseSets}} seconds between reps and {{schema.pauseReps}} seconds between exercise</p>
+            <p>with {{schema.pauseReps}} seconds between reps and {{schema.pauseExercise}} seconds between exercise</p>
             <mat-divider></mat-divider>
             <p>{{schema.intervalReps}} x interval {{schema.intervalDuration}} seconds on and {{schema.intervalPause}}
                 seconds off</p>

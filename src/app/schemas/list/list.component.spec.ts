@@ -26,7 +26,7 @@ describe('ListComponent', () => {
       for (const exercise of schema.exercises) {
         hasText(`${exercise.reps} reps of ${exercise.sets} sets`);
       }
-      hasText(`with ${schema.pauseSets} seconds between reps and ${schema.pauseReps} seconds between exercise`);
+      hasText(`with ${schema.pauseReps} seconds between reps and ${schema.pauseExercise} seconds between exercise`);
       hasText(`${schema.intervalReps} x interval ${schema.intervalDuration} seconds on and ${schema.intervalPause} seconds off`);
     }
   });

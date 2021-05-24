@@ -1,4 +1,5 @@
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { fireEvent, render } from '@testing-library/angular'
 import userEvent from '@testing-library/user-event'
 import { MaterialModule } from 'src/app/material.module';
@@ -53,7 +54,10 @@ async function createComponent() {
       save: {
         emit: saveEmitSpy,
       } as any
-    }
+    },
+    providers: [
+      { provide: Router, useValue: { navigate: jest.fn() }}
+    ]
   });
   return {
     ...rendered,

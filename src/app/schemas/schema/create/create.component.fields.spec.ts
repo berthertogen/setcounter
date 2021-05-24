@@ -1,8 +1,8 @@
 import { FormsModule } from '@angular/forms';
-import { fireEvent, render } from '@testing-library/angular'
+import { Router } from '@angular/router';
+import { render } from '@testing-library/angular'
 import userEvent from '@testing-library/user-event'
 import { MaterialModule } from 'src/app/material.module';
-import { ExerciseDefault, Schema } from 'src/app/schemas/schema/schema';
 import { SchemasCreateComponent } from './create.component';
 
 describe('CreateComponent - fields', () => {
@@ -47,13 +47,22 @@ describe('CreateComponent - fields', () => {
   test('should update sets value when clicking plus or minus the sets', async () => {
     const { clickByTitle, fixture } = await createComponent();
 
-    clickByTitle('Plus set', 4);
+    clickByTitle('Plus set', 1);
 
-    expect(fixture.componentInstance.schema.exercise.sets).toBe(16);
+    expect(fixture.componentInstance.schema.exercise.sets).toBe(13);
 
-    clickByTitle('Minus set', 2);
+    clickByTitle('Minus set', 1);
 
-    expect(fixture.componentInstance.schema.exercise.sets).toBe(14);
+    expect(fixture.componentInstance.schema.exercise.sets).toBe(12);
+  });
+
+  test('should update pauseExercise value when sliding the range', async () => {
+    const { getByText, changeSlider, fixture } = await createComponent();
+
+    changeSlider('Pause between exercise (sec)', 6);
+
+    expect(fixture.componentInstance.schema.pauseExercise).toBe(60);
+    expect(getByText('60 seconds')).toBeDefined();
   });
 
   test('should update pauseReps value when sliding the range', async () => {
@@ -61,16 +70,7 @@ describe('CreateComponent - fields', () => {
 
     changeSlider('Pause between reps (sec)', 6);
 
-    expect(fixture.componentInstance.schema.pauseReps).toBe(60);
-    expect(getByText('60 seconds')).toBeDefined();
-  });
-
-  test('should update pauseSets value when sliding the range', async () => {
-    const { getByText, changeSlider, fixture } = await createComponent();
-
-    changeSlider('Pause between sets (sec)', 6);
-
-    expect(fixture.componentInstance.schema.pauseSets).toBe(30);
+    expect(fixture.componentInstance.schema.pauseReps).toBe(30);
     expect(getByText('30 seconds')).toBeDefined();
   });
 
@@ -114,14 +114,11 @@ describe('CreateComponent - fields', () => {
 });
 
 async function createComponent() {
-  const saveEmitSpy = jest.fn();
   const rendered = await render(SchemasCreateComponent, {
     imports: [FormsModule, MaterialModule],
-    componentProperties: {
-      save: {
-        emit: saveEmitSpy,
-      } as any
-    }
+    providers: [
+      { provide: Router, useValue: { navigate: jest.fn() }}
+    ]
   });
   return {
     ...rendered,
@@ -144,6 +141,5 @@ async function createComponent() {
       userEvent.clear(input);
       userEvent.type(input, value);
     },
-    saveNthCalledWith: (times: number, schema: Schema) => expect(saveEmitSpy).toHaveBeenNthCalledWith(times, schema),
   };
 }

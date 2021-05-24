@@ -46,6 +46,10 @@ export class SchemasCreateComponent {
     let schemas = schemasJson ? JSON.parse(schemasJson) : [];
     schemas.push(schema);
     localStorage.setItem('setcounter-schemas', JSON.stringify(schemas));
-    // this.router.navigate(['schemas', 'list']);
+    this.router.navigate(['schemas', 'list']);
+  }
+
+  cancel() {
+    this.router.navigate(['schemas', 'list']);
   }
 }

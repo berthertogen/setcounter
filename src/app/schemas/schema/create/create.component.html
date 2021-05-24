@@ -51,20 +51,20 @@
     <button mat-button class="btn-add-exercise" color="accent" title="Add exercise" (click)="addExercise()">+ Add
         exercise</button>
 
-    <label id="pauseReps">Pause between reps (sec)</label>
+    <label id="pauseExercise">Pause between exercise (sec)</label>
     <div class="slider">
         <mat-slider [max]="120" [min]="0" [step]="10" [thumbLabel]="true" [tickInterval]="1"
+            [(ngModel)]="schema.pauseExercise" name="formPauseExercise" aria-labelledby="pauseExercise">
+        </mat-slider>
+        <label>{{schema.pauseExercise}} seconds</label>
+    </div>
+
+    <label id="pauseReps">Pause between reps (sec)</label>
+    <div class="slider">
+        <mat-slider [max]="60" [min]="0" [step]="5" [thumbLabel]="true" [tickInterval]="1"
             [(ngModel)]="schema.pauseReps" name="formPauseReps" aria-labelledby="pauseReps">
         </mat-slider>
         <label>{{schema.pauseReps}} seconds</label>
-    </div>
-
-    <label id="pauseSets">Pause between sets (sec)</label>
-    <div class="slider">
-        <mat-slider [max]="60" [min]="0" [step]="5" [thumbLabel]="true" [tickInterval]="1"
-            [(ngModel)]="schema.pauseSets" name="formPauseSets" aria-labelledby="pauseSets">
-        </mat-slider>
-        <label>{{schema.pauseSets}} seconds</label>
     </div>
 
     <mat-divider></mat-divider>
@@ -100,5 +100,8 @@
         <label>{{schema.intervalPause}} seconds</label>
     </div>
 
-    <button mat-flat-button color="primary" class="btn-save" title="Save schema" (click)="save(schema)">Save schema</button>
+    <div class="btn-actions">
+        <button mat-flat-button color="primary" title="Save schema" (click)="save(schema)">Save schema</button>
+        <button mat-button title="Cancel" (click)="cancel()">Cancel</button>
+    </div>
 </form>
