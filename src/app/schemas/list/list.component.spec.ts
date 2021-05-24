@@ -2,118 +2,100 @@ import { MatCardModule } from '@angular/material/card';
 import { render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { MaterialModule } from 'src/app/material.module';
-import { ExerciseDefault, Schema } from 'src/app/schemas/schema/schema';
+import { ExerciseDefault, Schema, SchemaDefault } from 'src/app/schemas/schema/schema';
+import { Autofixture } from 'ts-autofixture/dist/src';
 
 import { SchemasListComponent } from './list.component';
 
 describe('ListComponent', () => {
   test('should have text No schemas when no schemas are found', async () => {
-    const { hasText } = await createComponent();
+    const { hasText, hasTitle } = await createComponent();
 
+    hasTitle("+ Create schema");
     hasText("No schema's found.");
   });
 
   test('should have schemas when schemas are found', async () => {
-    const { hasText, notHasText } = await createComponentWithSchemas();
+    const { hasText, notHasText, schemasLoaded, schemas } = await createComponentWithSchemas();
 
+    schemasLoaded(1);
     notHasText("No schema's found.");
- 
-    hasText("Warmup 10 minutes");
-    hasText("4 reps of 10 sets");
-    hasText("4 reps of 11 sets");
-    hasText("3 reps of 12 sets");
-    hasText("with 30 seconds between reps and 60 seconds between exercise");
-    hasText("14 x interval 20 seconds on and 10 seconds off");
 
-    hasText("Warmup 15 minutes");
-    hasText("1 reps of 20 sets");
-    hasText("2 reps of 15 sets");
-    hasText("3 reps of 10 sets");
-    hasText("with 20 seconds between reps and 50 seconds between exercise");
-    hasText("15 x interval 25 seconds on and 15 seconds off");
+    for (const schema of schemas) {
+      hasText(`Warmup ${schema.warmup} minutes`);
+      for (const exercise of schema.exercises) {
+        hasText(`${exercise.reps} reps of ${exercise.sets} sets`);
+      }
+      hasText(`with ${schema.pauseSets} seconds between reps and ${schema.pauseReps} seconds between exercise`);
+      hasText(`${schema.intervalReps} x interval ${schema.intervalDuration} seconds on and ${schema.intervalPause} seconds off`);
+    }
   });
 
-  test('should emit Delete schema event when Delete schema button is clicked', async () => {
-    const { clickNthByTitle, deleteCalledWith } = await createComponentWithSchemas();
-    
-    clickNthByTitle('- Delete schema', 1);
-    deleteCalledWith(1, {
-      warmup: 15,
-      exercises: [
-        { reps: 1, sets: 20 },
-        { reps: 2, sets: 15 },
-        { reps: 3, sets: 10 },
-      ],
-      exercise: new ExerciseDefault(),
-      pauseReps: 50,
-      pauseSets: 20,
-      intervalReps: 15,
-      intervalDuration: 25,
-      intervalPause: 15
-    });
-  });
+  test('should remove schema from list when Delete schema event is fired', async () => {
+    const { clickNthByTitle, schemasSaved, schemas } = await createComponentWithSchemas();
 
-  async function createComponentWithSchemas() {
-    const deleteEmitSpy = jest.fn();
-    const rendered = await render(SchemasListComponent, {
-      imports: [MatCardModule, MaterialModule],
-      componentProperties: {
-        schemas: [{
-          warmup: 10,
-          exercises: [
-            { reps: 4, sets: 10 },
-            { reps: 4, sets: 11 },
-            { reps: 3, sets: 12 },
-          ],
-          exercise: new ExerciseDefault(),
-          pauseReps: 60,
-          pauseSets: 30,
-          intervalReps: 14,
-          intervalDuration: 20,
-          intervalPause: 10
-        },
-        {
-          warmup: 15,
-          exercises: [
-            { reps: 1, sets: 20 },
-            { reps: 2, sets: 15 },
-            { reps: 3, sets: 10 },
-          ],
-          exercise: new ExerciseDefault(),
-          pauseReps: 50,
-          pauseSets: 20,
-          intervalReps: 15,
-          intervalDuration: 25,
-          intervalPause: 15
-        }],
-        delete: {
-          emit: deleteEmitSpy,
-        } as any
-      },
-    });
-    return createComponentWithExtras(rendered, deleteEmitSpy);
-  }
+    clickNthByTitle('- Delete schema', 0);
+
+    schemas.splice(0, 1);
+    schemasSaved(1, [schemas]);
+  });
 
   async function createComponent() {
-    const deleteEmitSpy = jest.fn();
-    const rendered = await render(SchemasListComponent, {
-      imports: [MatCardModule, MaterialModule],
-      componentProperties: {
-        delete: {
-          emit: deleteEmitSpy,
-        } as any
-      }
-    });
-    return createComponentWithExtras(rendered, deleteEmitSpy);
+    return await createComponentWithExtras([]);
   }
 
-  async function createComponentWithExtras(rendered: any, deleteEmitSpy: jest.Mock) {
+  async function createComponentWithSchemas() {
+    return await createComponentWithExtras(mockSchemas());
+  }
+
+  async function createComponentWithExtras(schemas: Schema[]) {
+    const {getItem, setItem} = mockLocalStorage(schemas);
+    const rendered = await render(SchemasListComponent, {
+      imports: [MatCardModule, MaterialModule]
+    });
     return {
       ...rendered,
+      schemas,
       hasText: (text: string) => rendered.getByText(text),
+      hasTitle: (text: string) => rendered.getByTitle(text),
       notHasText: (text: string) => expect(rendered.queryByText(text)).toBeNull(),
       clickNthByTitle: (text: string, index: number) => userEvent.click(rendered.getAllByTitle(text)[index]),
-      deleteCalledWith: (times: number, schema: Schema) => expect(deleteEmitSpy).toHaveBeenNthCalledWith(times, schema),
+      schemasLoaded: (times: number) => {
+        expect(getItem).toHaveBeenNthCalledWith(times, 'setcounter-schemas');
+        expect(rendered.fixture.componentInstance.schemas).toEqual(schemas);
+      },
+      schemasSaved: (times: number, schemas: Schema[][]) => {
+        expect(setItem).toHaveBeenCalledTimes(times);
+        for (const schema of schemas) {
+          expect(setItem).toHaveBeenCalledWith('setcounter-schemas', JSON.stringify(schema));
+        }
+      }
     };
+  }
+
+  function mockLocalStorage(schemas: Schema[]) {
+    const getItem = jest.fn();
+    const setItem = jest.fn();
+    getItem
+      .mockReset()
+      .mockImplementation(() => JSON.stringify(schemas));
+    setItem
+      .mockReset();
+    Object.defineProperty(window, "localStorage", {
+      value: {
+        getItem,
+        setItem,
+      },
+      writable: true
+    });
+    return {getItem, setItem};
+  }
+
+  function mockSchemas() {
+    const schemaDefault = {
+      ...new SchemaDefault(),
+      exercises: [new ExerciseDefault()]
+    };
+    return new Autofixture().createMany<Schema>(schemaDefault);
   }
 });

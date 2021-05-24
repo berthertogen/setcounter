@@ -1,8 +1,10 @@
 import { FormsModule } from '@angular/forms';
-import { fireEvent, render } from '@testing-library/angular'
+import { Router } from '@angular/router';
+import { render } from '@testing-library/angular'
 import userEvent from '@testing-library/user-event'
 import { MaterialModule } from 'src/app/material.module';
-import { ExerciseDefault, Schema } from 'src/app/schemas/schema/schema';
+import { ExerciseDefault, Schema, SchemaDefault } from 'src/app/schemas/schema/schema';
+import { Autofixture } from 'ts-autofixture/dist/src';
 import { SchemasCreateComponent } from './create.component';
 
 describe('CreateComponent - overall', () => {
@@ -34,8 +36,8 @@ describe('CreateComponent - overall', () => {
     expect(fixture.componentInstance.schema.intervalPause).toBe(10);
   }); 
 
-  test('should emit output when save schema is clicked', async () => {
-    const { click, clickByTitle, changeSlider, saveNthCalledWith } = await createComponent();
+  test('should add schema to localstorage when save schema is clicked', async () => {
+    const { click, clickByTitle, changeSlider, schemasSaved, navigatedToList } = await createComponent();
 
     changeSlider('Warmup duration (sec)', 2);
 
@@ -55,37 +57,84 @@ describe('CreateComponent - overall', () => {
 
     click('Save schema');
 
-    saveNthCalledWith(1, {
+    schemasSaved(1, [[{
       warmup: 10,
+      exercise: new ExerciseDefault(),
       exercises: [
         { reps: 4, sets: 13 },
         { reps: 5, sets: 14 },
       ],
-      exercise: new ExerciseDefault(),
       pauseReps: 60,
       pauseSets: 30,
       intervalReps: 15,
       intervalDuration: 20,
       intervalPause: 10
-    })
+    }]]);
+    navigatedToList();
+  });
+
+  test('should push schema into localstorage array when save schema is clicked', async () => {
+    const { click, clickByTitle, changeSlider, schemasSaved, schemas, navigatedToList } = await createComponentWithSchemas();
+
+    changeSlider('Warmup duration (sec)', 2);
+
+    clickByTitle('Plus rep', 1);
+    clickByTitle('Plus set', 1);
+    click('+ Add exercise');
+
+    clickByTitle('Plus rep', 2);
+    clickByTitle('Plus set', 2);
+    click('+ Add exercise');
+    changeSlider('Pause between reps (sec)', 6);
+    changeSlider('Pause between sets (sec)', 6);
+
+    clickByTitle('Plus interval reps', 1);
+    changeSlider('Interval duration (sec)', 4);
+    changeSlider('Interval pause (sec)', 2);
+
+    click('Save schema');
+
+    schemas.push({
+      warmup: 10,
+      exercise: new ExerciseDefault(),
+      exercises: [
+        { reps: 4, sets: 13 },
+        { reps: 5, sets: 14 },
+      ],
+      pauseReps: 60,
+      pauseSets: 30,
+      intervalReps: 15,
+      intervalDuration: 20,
+      intervalPause: 10
+    });
+    schemasSaved(1, [schemas]);
+    navigatedToList();
   });
 
   async function createComponent() {
-    const saveEmitSpy = jest.fn();
+    return await createComponentWithExtras([]);
+  }
+
+  async function createComponentWithSchemas() {
+    return await createComponentWithExtras(mockSchemas());
+  }
+
+  async function createComponentWithExtras(schemas: Schema[]) {
+    const { setItem } = mockLocalStorage(schemas);
+    const router = { navigate: jest.fn() };
     const rendered = await render(SchemasCreateComponent, {
       imports: [FormsModule, MaterialModule],
-      componentProperties: {
-        save: {
-          emit: saveEmitSpy,
-        } as any
-      }
+      providers: [
+        { provide: Router, useValue: router}
+      ]
     });
     return {
       ...rendered,
+      schemas,
       click: (text: string) => userEvent.click(rendered.getByText(text)),
       clickByTitle: (title: string, times?: number) => {
         for (let index = 0; index < (times || 1); index++) {
-          userEvent.click(rendered.getByTitle(title))
+          userEvent.click(rendered.getByTitle(title));
         }
       },
       clickAllByTitle: (title: string, indexToClick: number) => {
@@ -101,7 +150,39 @@ describe('CreateComponent - overall', () => {
         userEvent.clear(input);
         userEvent.type(input, value);
       },
-      saveNthCalledWith: (times: number, schema: Schema) => expect(saveEmitSpy).toHaveBeenNthCalledWith(times, schema),
+      schemasSaved: (times: number, schemas: Schema[][]) => {
+        expect(setItem).toHaveBeenCalledTimes(times);
+        for (const schema of schemas) {
+          expect(setItem).toHaveBeenCalledWith('setcounter-schemas', JSON.stringify(schema));
+        }
+      },
+      navigatedToList: () => expect(router.navigate).toHaveBeenNthCalledWith(1, ['schemas', 'list'])
     };
+  }
+
+  function mockLocalStorage(schemas: Schema[]) {
+    const getItem = jest.fn();
+    const setItem = jest.fn();
+    getItem
+      .mockReset()
+      .mockImplementation(() => JSON.stringify(schemas));
+    setItem
+      .mockReset();
+    Object.defineProperty(window, "localStorage", {
+      value: {
+        getItem,
+        setItem,
+      },
+      writable: true
+    });
+    return { getItem, setItem};
+  }
+
+  function mockSchemas() {
+    const schemaDefault = {
+      ...new SchemaDefault(),
+      exercises: [new ExerciseDefault()]
+    };
+    return new Autofixture().createMany<Schema>(schemaDefault);
   }
 });

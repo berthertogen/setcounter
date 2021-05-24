@@ -16,9 +16,13 @@
                 seconds off</p>
         </mat-card-content>
         <mat-card-actions>
-            <button mat-icon-button title="- Delete schema" (click)="delete.emit(schema)">
+            <button mat-icon-button title="- Delete schema" (click)="delete(schema)">
                 <mat-icon>delete</mat-icon>
             </button>
         </mat-card-actions>
     </mat-card>
 </ng-container>
+
+<button class="btn-add" mat-fab color="primary" routerLink="/schemas/create" title="+ Create schema">
+    <mat-icon>add</mat-icon>
+</button>

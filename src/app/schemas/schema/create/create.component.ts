@@ -1,4 +1,5 @@
-import { Component, EventEmitter, HostBinding, Output } from '@angular/core';
+import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { Exercise, ExerciseDefault, Schema, SchemaDefault } from 'src/app/schemas/schema/schema';
 
 @Component({
@@ -7,10 +8,9 @@ import { Exercise, ExerciseDefault, Schema, SchemaDefault } from 'src/app/schema
   styleUrls: ['./create.component.sass']
 })
 export class SchemasCreateComponent {
-  @HostBinding('attr.data-testid')  dataTestid = 'app-schemas-create';
-  @Output() save = new EventEmitter<Schema>();
-
   schema: Schema = new SchemaDefault();
+
+  constructor(private router: Router) { }
 
   plusRep() {
     this.schema.exercise.reps++;
@@ -39,5 +39,13 @@ export class SchemasCreateComponent {
   removeExercise(exercise: Exercise) {
     const index = this.schema.exercises.indexOf(exercise);
     this.schema.exercises.splice(index, 1);
+  }
+
+  save(schema: Schema) {
+    const schemasJson = localStorage.getItem('setcounter-schemas');
+    let schemas = schemasJson ? JSON.parse(schemasJson) : [];
+    schemas.push(schema);
+    localStorage.setItem('setcounter-schemas', JSON.stringify(schemas));
+    // this.router.navigate(['schemas', 'list']);
   }
 }

@@ -6,10 +6,20 @@ import { Schema } from 'src/app/schemas/schema/schema';
   templateUrl: './list.component.html',
   styleUrls: ['./list.component.sass']
 })
-export class SchemasListComponent {
-  @HostBinding('attr.data-testid')  dataTestid = 'app-schemas-list';
+export class SchemasListComponent implements OnInit {
 
-  @Input() schemas: Schema[] = [];
+  schemas: Schema[] = [];
 
-  @Output() delete = new EventEmitter<Schema>();
+  ngOnInit(): void {
+    const schemasJson = localStorage.getItem('setcounter-schemas');
+    if (schemasJson) {
+      this.schemas = JSON.parse(schemasJson);
+    }
+  }
+
+  delete(schema: Schema) {
+    const indexOf = this.schemas.indexOf(schema);
+    this.schemas.splice(indexOf, 1);
+    localStorage.setItem('setcounter-schemas', JSON.stringify(this.schemas));
+  }
 }

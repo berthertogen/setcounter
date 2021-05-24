@@ -1,8 +1,4 @@
 <mat-toolbar color="primary">
     <span>Schema's</span>
 </mat-toolbar>
-<app-schemas-list *ngIf="!create" [schemas]="schemas" (delete)="delete($event)"></app-schemas-list>
-<app-schemas-create *ngIf="create" (save)="save($event)"></app-schemas-create>
-<button class="btn-add" mat-fab color="primary" *ngIf="!create" (click)="createSchema()" title="+ Create schema">
-    <mat-icon>add</mat-icon>
-</button>
+<router-outlet></router-outlet>
