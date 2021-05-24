@@ -17,7 +17,7 @@ describe('ListComponent', () => {
     const { hasText, notHasText } = await createComponentWithSchemas();
 
     notHasText("No schema's found.");
-
+ 
     hasText("Warmup 10 minutes");
     hasText("4 reps of 10 sets");
     hasText("4 reps of 11 sets");

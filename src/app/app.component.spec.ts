@@ -5,19 +5,21 @@ import { MaterialModule } from './material.module';
 import { SchemasListComponent } from './schemas/list/list.component';
 import { SchemasCreateComponent } from './schemas/schema/create/create.component';
 import { SchemasComponent } from './schemas/schemas.component';
+import { RouterTestingModule } from "@angular/router/testing";
+import { routes } from './app-routing.module';
 
 describe('AppComponent', () => {
 
   test('should show schema list on load', async () => {
     const { hasByTestId } = await createComponent();
 
-    hasByTestId("app-schemas");
+    hasByTestId("router-outlet");
   });
 
   async function createComponent() {
     const rendered = await render(AppComponent, {
       declarations: [SchemasComponent, SchemasCreateComponent, SchemasListComponent],
-      imports: [FormsModule, MaterialModule]
+      imports: [FormsModule, MaterialModule, RouterTestingModule.withRoutes(routes)]
     });
     return {
       ...rendered,

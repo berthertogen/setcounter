@@ -8,6 +8,7 @@ import { SchemasCreateComponent } from './schemas/schema/create/create.component
 import { SchemasListComponent } from './schemas/list/list.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialModule } from './material.module';
+import { AppRoutingModule } from './app-routing.module';
 
 @NgModule({
   declarations: [
@@ -18,10 +19,11 @@ import { MaterialModule } from './material.module';
   ],
   imports: [
     BrowserModule,
+    AppRoutingModule,
     FormsModule,
     ReactiveFormsModule,
     BrowserAnimationsModule,
-    MaterialModule
+    MaterialModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
