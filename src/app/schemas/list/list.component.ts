@@ -1,4 +1,5 @@
-import { Component, EventEmitter, HostBinding, Input, OnInit, Output } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Schema } from 'src/app/schemas/schema/schema';
 
 @Component({
@@ -9,6 +10,8 @@ import { Schema } from 'src/app/schemas/schema/schema';
 export class SchemasListComponent implements OnInit {
 
   schemas: Schema[] = [];
+
+  constructor(private router: Router) { }
 
   ngOnInit(): void {
     const schemasJson = localStorage.getItem('setcounter-schemas');
@@ -21,5 +24,13 @@ export class SchemasListComponent implements OnInit {
     const indexOf = this.schemas.indexOf(schema);
     this.schemas.splice(indexOf, 1);
     localStorage.setItem('setcounter-schemas', JSON.stringify(this.schemas));
+  }
+
+  run(schema: Schema) {
+    this.router.navigate(['schemas', 'run'], {
+      state: {
+        schema: JSON.stringify(schema)
+      }
+    });
   }
 }

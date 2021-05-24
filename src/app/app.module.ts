@@ -9,6 +9,7 @@ import { SchemasListComponent } from './schemas/list/list.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialModule } from './material.module';
 import { AppRoutingModule } from './app-routing.module';
+import { SchemasRunComponent } from './schemas/schema/run/run.component';
 
 @NgModule({
   declarations: [
@@ -16,6 +17,7 @@ import { AppRoutingModule } from './app-routing.module';
     SchemasComponent,
     SchemasCreateComponent,
     SchemasListComponent,
+    SchemasRunComponent,
   ],
   imports: [
     BrowserModule,

@@ -6,6 +6,7 @@ import { SchemasListComponent } from './schemas/list/list.component';
 import { SchemasCreateComponent } from './schemas/schema/create/create.component';
 import { SchemasComponent } from './schemas/schemas.component';
 import { routes } from './app-routing.module';
+import { SchemasRunComponent } from './schemas/schema/run/run.component';
 
 describe('AppComponent', () => {
 
@@ -17,7 +18,7 @@ describe('AppComponent', () => {
 
   async function createComponent() {
     const rendered = await render(AppComponent, {
-      declarations: [SchemasComponent, SchemasCreateComponent, SchemasListComponent],
+      declarations: [SchemasComponent, SchemasCreateComponent, SchemasListComponent, SchemasRunComponent],
       imports: [FormsModule, MaterialModule],
       routes: routes,
     });

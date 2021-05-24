@@ -1,4 +1,5 @@
 import { MatCardModule } from '@angular/material/card';
+import { Router } from '@angular/router';
 import { render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { MaterialModule } from 'src/app/material.module';
@@ -40,6 +41,14 @@ describe('ListComponent', () => {
     schemasSaved(1, [schemas]);
   });
 
+  test('should start a run when play button is pressed', async () => {
+    const { clickNthByTitle, navigatedToRun, schemas } = await createComponentWithSchemas();
+
+    clickNthByTitle('Run schema', 0);
+
+    navigatedToRun(schemas[0]);
+  });
+
   async function createComponent() {
     return await createComponentWithExtras([]);
   }
@@ -49,9 +58,13 @@ describe('ListComponent', () => {
   }
 
   async function createComponentWithExtras(schemas: Schema[]) {
-    const {getItem, setItem} = mockLocalStorage(schemas);
+    const router = { navigate: jest.fn() };
+    const { getItem, setItem } = mockLocalStorage(schemas);
     const rendered = await render(SchemasListComponent, {
-      imports: [MatCardModule, MaterialModule]
+      imports: [MatCardModule, MaterialModule],
+      providers: [
+        { provide: Router, useValue: router }
+      ]
     });
     return {
       ...rendered,
@@ -69,7 +82,8 @@ describe('ListComponent', () => {
         for (const schema of schemas) {
           expect(setItem).toHaveBeenCalledWith('setcounter-schemas', JSON.stringify(schema));
         }
-      }
+      },
+      navigatedToRun: (schema: Schema) => expect(router.navigate).toHaveBeenNthCalledWith(1, ['schemas', 'run'], { state: { schema: JSON.stringify(schema) } })
     };
   }
 
@@ -88,7 +102,7 @@ describe('ListComponent', () => {
       },
       writable: true
     });
-    return {getItem, setItem};
+    return { getItem, setItem };
   }
 
   function mockSchemas() {

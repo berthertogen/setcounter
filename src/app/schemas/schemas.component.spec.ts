@@ -7,6 +7,7 @@ import { SchemasComponent } from './schemas.component';
 import { MaterialModule } from '../material.module';
 import { RouterTestingModule } from '@angular/router/testing';
 import { routes } from '../app-routing.module';
+import { SchemasRunComponent } from './schema/run/run.component';
 
 describe('SchemasComponent', () => {
   test('should have title', async () => {
@@ -17,7 +18,7 @@ describe('SchemasComponent', () => {
 
   async function createComponent() {
     const rendered = await render(SchemasComponent, {
-      declarations: [SchemasCreateComponent, SchemasListComponent],
+      declarations: [SchemasCreateComponent, SchemasListComponent, SchemasRunComponent],
       imports: [FormsModule, MaterialModule, RouterTestingModule.withRoutes(routes)]
     });
     return {
