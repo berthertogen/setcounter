@@ -31,7 +31,7 @@ jobs:
       - run:
           name: Run tests
           command: npm test
-      - store_artifacts:
+      - store_test_results:
           path: coverage
 
 workflows:
