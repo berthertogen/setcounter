@@ -1,29 +1,22 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Schema } from 'src/app/schemas/schema/schema';
+import { SchemasService } from '../schemas.service';
 
 @Component({
   selector: 'app-schemas-list',
   templateUrl: './list.component.html',
   styleUrls: ['./list.component.sass']
 })
-export class SchemasListComponent implements OnInit {
+export class SchemasListComponent {
 
-  schemas: Schema[] = [];
+  schemas: Schema[] = this.schemasService.get();
 
-  constructor(private router: Router) { }
-
-  ngOnInit(): void {
-    const schemasJson = localStorage.getItem('setcounter-schemas');
-    if (schemasJson) {
-      this.schemas = JSON.parse(schemasJson);
-    }
-  }
+  constructor(private router: Router, private schemasService: SchemasService) { }
 
   delete(schema: Schema) {
     const indexOf = this.schemas.indexOf(schema);
-    this.schemas.splice(indexOf, 1);
-    localStorage.setItem('setcounter-schemas', JSON.stringify(this.schemas));
+    this.schemasService.remove(indexOf);
   }
 
   run(schema: Schema) {

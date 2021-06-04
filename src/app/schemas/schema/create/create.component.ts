@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { Exercise, ExerciseDefault, Schema, SchemaDefault } from 'src/app/schemas/schema/schema';
+import { SchemasService } from '../../schemas.service';
 
 @Component({
   selector: 'app-schemas-create',
@@ -10,7 +11,7 @@ import { Exercise, ExerciseDefault, Schema, SchemaDefault } from 'src/app/schema
 export class SchemasCreateComponent {
   schema: Schema = new SchemaDefault();
 
-  constructor(private router: Router) { }
+  constructor(private router: Router, private schemasService: SchemasService) { }
 
   plusRep() {
     this.schema.exercise.reps++;
@@ -42,10 +43,7 @@ export class SchemasCreateComponent {
   }
 
   save(schema: Schema) {
-    const schemasJson = localStorage.getItem('setcounter-schemas');
-    let schemas = schemasJson ? JSON.parse(schemasJson) : [];
-    schemas.push(schema);
-    localStorage.setItem('setcounter-schemas', JSON.stringify(schemas));
+    this.schemasService.add(schema);
     this.router.navigate(['schemas', 'list']);
   }
 

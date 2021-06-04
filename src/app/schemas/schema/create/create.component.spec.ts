@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event'
 import { MaterialModule } from 'src/app/material.module';
 import { ExerciseDefault, Schema, SchemaDefault } from 'src/app/schemas/schema/schema';
 import { Autofixture } from 'ts-autofixture/dist/src';
+import { SchemasService } from '../../schemas.service';
 import { SchemasCreateComponent } from './create.component';
 
 describe('CreateComponent - overall', () => {
@@ -34,9 +35,9 @@ describe('CreateComponent - overall', () => {
     expect(fixture.componentInstance.schema.intervalReps).toBe(14);
     expect(fixture.componentInstance.schema.intervalDuration).toBe(20);
     expect(fixture.componentInstance.schema.intervalPause).toBe(10);
-  }); 
+  });
 
-  test('should add schema to localstorage when save schema is clicked', async () => {
+  test('should call schemasService add when save schema is clicked', async () => {
     const { click, clickByTitle, changeSlider, schemasSaved, navigatedToList } = await createComponent();
 
     changeSlider('Warmup duration (sec)', 2);
@@ -57,7 +58,7 @@ describe('CreateComponent - overall', () => {
 
     click('Save schema');
 
-    schemasSaved(1, [[{
+    schemasSaved(1, {
       warmup: 10,
       exercise: new ExerciseDefault(),
       exercises: [
@@ -69,11 +70,11 @@ describe('CreateComponent - overall', () => {
       intervalReps: 15,
       intervalDuration: 20,
       intervalPause: 10
-    }]]);
+    });
     navigatedToList();
   });
 
-  test('should push schema into localstorage array when save schema is clicked', async () => {
+  test('should call schemasService add when save schema is clicked', async () => {
     const { click, clickByTitle, changeSlider, schemasSaved, schemas, navigatedToList } = await createComponentWithSchemas();
 
     changeSlider('Warmup duration (sec)', 2);
@@ -94,7 +95,7 @@ describe('CreateComponent - overall', () => {
 
     click('Save schema');
 
-    schemas.push({
+    const schema = {
       warmup: 10,
       exercise: new ExerciseDefault(),
       exercises: [
@@ -106,8 +107,8 @@ describe('CreateComponent - overall', () => {
       intervalReps: 15,
       intervalDuration: 20,
       intervalPause: 10
-    });
-    schemasSaved(1, [schemas]);
+    };
+    schemasSaved(1, schema);
     navigatedToList();
   });
 
@@ -117,7 +118,7 @@ describe('CreateComponent - overall', () => {
     click("Cancel");
 
     navigatedToList();
-  }); 
+  });
 
   async function createComponent() {
     return await createComponentWithExtras([]);
@@ -128,12 +129,13 @@ describe('CreateComponent - overall', () => {
   }
 
   async function createComponentWithExtras(schemas: Schema[]) {
-    const { setItem } = mockLocalStorage(schemas);
+    const { add } = mockSchemaService();
     const router = { navigate: jest.fn() };
     const rendered = await render(SchemasCreateComponent, {
       imports: [FormsModule, MaterialModule],
       providers: [
-        { provide: Router, useValue: router}
+        { provide: Router, useValue: router },
+        { provide: SchemasService, useValue: { add } }
       ]
     });
     return {
@@ -158,32 +160,17 @@ describe('CreateComponent - overall', () => {
         userEvent.clear(input);
         userEvent.type(input, value);
       },
-      schemasSaved: (times: number, schemas: Schema[][]) => {
-        expect(setItem).toHaveBeenCalledTimes(times);
-        for (const schema of schemas) {
-          expect(setItem).toHaveBeenCalledWith('setcounter-schemas', JSON.stringify(schema));
-        }
+      schemasSaved: (times: number, schemas: Schema) => {
+        expect(add).toHaveBeenNthCalledWith(times, schemas);
       },
       navigatedToList: () => expect(router.navigate).toHaveBeenNthCalledWith(1, ['schemas', 'list'])
     };
   }
 
-  function mockLocalStorage(schemas: Schema[]) {
-    const getItem = jest.fn();
-    const setItem = jest.fn();
-    getItem
-      .mockReset()
-      .mockImplementation(() => JSON.stringify(schemas));
-    setItem
-      .mockReset();
-    Object.defineProperty(window, "localStorage", {
-      value: {
-        getItem,
-        setItem,
-      },
-      writable: true
-    });
-    return { getItem, setItem};
+  function mockSchemaService() {
+    const add = jest.fn();
+    add.mockReset();
+    return { add };
   }
 
   function mockSchemas() {

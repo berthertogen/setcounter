@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { MaterialModule } from 'src/app/material.module';
 import { ExerciseDefault, Schema, SchemaDefault } from 'src/app/schemas/schema/schema';
 import { Autofixture } from 'ts-autofixture/dist/src';
+import { SchemasService } from '../schemas.service';
 
 import { SchemasListComponent } from './list.component';
 
@@ -33,12 +34,11 @@ describe('ListComponent', () => {
   });
 
   test('should remove schema from list when Delete schema event is fired', async () => {
-    const { clickNthByTitle, schemasSaved, schemas } = await createComponentWithSchemas();
+    const { clickNthByTitle, schemasRemoved } = await createComponentWithSchemas();
 
     clickNthByTitle('- Delete schema', 0);
 
-    schemas.splice(0, 1);
-    schemasSaved(1, [schemas]);
+    schemasRemoved(1, 0);
   });
 
   test('should start a run when play button is pressed', async () => {
@@ -59,11 +59,12 @@ describe('ListComponent', () => {
 
   async function createComponentWithExtras(schemas: Schema[]) {
     const router = { navigate: jest.fn() };
-    const { getItem, setItem } = mockLocalStorage(schemas);
+    const { get, remove } = mockSchemaService(schemas);
     const rendered = await render(SchemasListComponent, {
       imports: [MatCardModule, MaterialModule],
       providers: [
-        { provide: Router, useValue: router }
+        { provide: Router, useValue: router },
+        { provide: SchemasService, useValue: { get, remove } }
       ]
     });
     return {
@@ -74,35 +75,25 @@ describe('ListComponent', () => {
       notHasText: (text: string) => expect(rendered.queryByText(text)).toBeNull(),
       clickNthByTitle: (text: string, index: number) => userEvent.click(rendered.getAllByTitle(text)[index]),
       schemasLoaded: (times: number) => {
-        expect(getItem).toHaveBeenNthCalledWith(times, 'setcounter-schemas');
+        expect(get).toHaveBeenCalledTimes(times);
         expect(rendered.fixture.componentInstance.schemas).toEqual(schemas);
       },
-      schemasSaved: (times: number, schemas: Schema[][]) => {
-        expect(setItem).toHaveBeenCalledTimes(times);
-        for (const schema of schemas) {
-          expect(setItem).toHaveBeenCalledWith('setcounter-schemas', JSON.stringify(schema));
-        }
+      schemasRemoved: (times: number, index: number) => {
+        expect(remove).toHaveBeenNthCalledWith(times, index);
       },
       navigatedToRun: (schema: Schema) => expect(router.navigate).toHaveBeenNthCalledWith(1, ['schemas', 'run'], { state: { schema: JSON.stringify(schema) } })
     };
   }
 
-  function mockLocalStorage(schemas: Schema[]) {
-    const getItem = jest.fn();
-    const setItem = jest.fn();
-    getItem
+  function mockSchemaService(schemas: Schema[]) {
+    const get = jest.fn();
+    const remove = jest.fn();
+    get
       .mockReset()
-      .mockImplementation(() => JSON.stringify(schemas));
-    setItem
+      .mockImplementation(() => schemas);
+    remove
       .mockReset();
-    Object.defineProperty(window, "localStorage", {
-      value: {
-        getItem,
-        setItem,
-      },
-      writable: true
-    });
-    return { getItem, setItem };
+    return { get, remove };
   }
 
   function mockSchemas() {
