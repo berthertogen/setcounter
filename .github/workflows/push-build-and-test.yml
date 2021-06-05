@@ -1,7 +1,7 @@
 name: Build and test
 on: [push]
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -10,15 +10,7 @@ jobs:
           check-latest: true
       - run: npm ci
       - run: npm run build
-  unit-tests:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
       - run: npm run test
-  integration-tests:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with:
