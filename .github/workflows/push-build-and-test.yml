@@ -12,6 +12,8 @@ jobs:
       - run: npm run build
   unit-tests:
     needs: build
+    runs-on: ubuntu-latest
+    steps:
       - run: npm run test
   integration-tests:
     needs: build
