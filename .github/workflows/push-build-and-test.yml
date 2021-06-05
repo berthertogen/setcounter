@@ -10,17 +10,17 @@ jobs:
           check-latest: true
       - run: npm ci
       - run: npm run build
+  unit-tests:
+    needs: build
       - run: npm run test
-  cypress-run:
+  integration-tests:
+    needs: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          check-latest: true
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with:
-          build: npm run build
+          install: false
+          # build: npm run build
           start: npm start
 
