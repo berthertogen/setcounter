@@ -17,6 +17,7 @@ export class SchemasListComponent {
   delete(schema: Schema) {
     const indexOf = this.schemas.indexOf(schema);
     this.schemasService.remove(indexOf);
+    this.schemas = this.schemasService.get();
   }
 
   run(schema: Schema) {

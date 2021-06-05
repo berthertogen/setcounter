@@ -34,11 +34,12 @@ describe('ListComponent', () => {
   });
 
   test('should remove schema from list when Delete schema event is fired', async () => {
-    const { clickNthByTitle, schemasRemoved } = await createComponentWithSchemas();
+    const { clickNthByTitle, schemasRemoved, schemasLoaded } = await createComponentWithSchemas();
 
     clickNthByTitle('- Delete schema', 0);
 
     schemasRemoved(1, 0);
+    schemasLoaded(2);
   });
 
   test('should start a run when play button is pressed', async () => {

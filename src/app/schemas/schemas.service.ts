@@ -7,6 +7,7 @@ export class SchemasService {
         let schemas = this.get();
         schemas.splice(index, 1)
         this.set(schemas);
+        console.log(schemas);
     }
 
     add(schema: Schema) {
