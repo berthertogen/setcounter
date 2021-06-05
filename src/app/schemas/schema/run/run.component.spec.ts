@@ -8,9 +8,20 @@ import { SchemasRunComponent } from './run.component';
 
 describe('RunComponent', () => {
   test('should create', async () => {
-    const { hasText, loadSchemaFromRoute } = await createComponent();
+    const { hasTitle, hasText, loadSchemaFromRoute, schemas } = await createComponent();
 
-    hasText('run works!');
+    hasText('1');
+    hasText('Warmup');
+    hasText(`${schemas[0].warmup}:00`);
+    hasTitle('Start warmup');
+    hasTitle('Done');
+
+    hasText('2');
+    hasText('Exercises');
+
+    hasText('3');
+    hasText('Interval');
+
     loadSchemaFromRoute()
   });
 
@@ -33,6 +44,7 @@ describe('RunComponent', () => {
     return {
       ...rendered,
       schemas,
+      hasTitle: (title: string) => rendered.getByTitle(title),
       hasText: (text: string) => rendered.getByText(text),
       loadSchemaFromRoute: () => expect(rendered.fixture.componentInstance.schema).toEqual(schemas[0])
     };

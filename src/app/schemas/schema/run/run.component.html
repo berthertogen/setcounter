@@ -1,1 +1,28 @@
-<p>run works!</p>
+<mat-vertical-stepper [linear]="true" #stepper>
+    <mat-step>
+        <form>
+            <ng-template matStepLabel>Warmup</ng-template>
+            <span class="time">{{schema.warmup}}:00</span>
+        </form>
+        <div class="actions">
+            <button mat-button color="accent" title="Start warmup" class="btn-done">Start warmup</button>
+            <button mat-button matStepperNext title="Done" class="btn-done">Done</button>
+        </div>
+    </mat-step>
+    <mat-step>
+        <form>
+            <ng-template matStepLabel>Exercises</ng-template>
+            <!-- <div>
+                <button mat-button matStepperNext>Next</button>
+            </div> -->
+        </form>
+    </mat-step>
+    <mat-step>
+        <form>
+            <ng-template matStepLabel>Interval</ng-template>
+            <!-- <div>
+                <button mat-button matStepperNext>Next</button>
+            </div> -->
+        </form>
+    </mat-step>
+</mat-vertical-stepper>
