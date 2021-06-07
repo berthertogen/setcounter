@@ -3,14 +3,16 @@
         <form>
             <ng-template matStepLabel>Warmup</ng-template>
             <ng-container *ngIf="warmupTimer$ | async as warmupTimer">
-                <mat-progress-spinner color="accent" mode="determinate" [value]="warmupTimer.percent">
+                <mat-progress-spinner color="accent" mode="determinate" [value]="warmupTimer.percent" [diameter]="220"
+                    [strokeWidth]="8">
                 </mat-progress-spinner>
                 <span class="time">{{warmupTimer.time.toFormat("mm:ss")}}</span>
             </ng-container>
         </form>
         <div class="actions">
-            <button mat-button color="accent" title="Start warmup" class="btn-done" (click)="startWarmup()">Start
-                warmup</button>
+            <button mat-button color="accent" title="Start warmup" class="btn-done" (click)="startWarmup()">
+                <mat-icon>play_arrow</mat-icon>Start warmup
+            </button>
             <button mat-button matStepperNext title="Done" class="btn-done">Done</button>
         </div>
     </mat-step>

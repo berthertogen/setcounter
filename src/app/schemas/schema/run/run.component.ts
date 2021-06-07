@@ -38,7 +38,7 @@ export class SchemasRunComponent implements OnDestroy, OnInit {
       .pipe(take(warmupSeconds))
       .subscribe(ellapsed => {
         const time = this.toDateTime(warmupSeconds - (ellapsed + 1));
-        const percent = 100// - (100 * ellapsed / warmupSeconds) - 1;
+        const percent = 100 - (100 * ellapsed / warmupSeconds) - 1;
         this.warmupTimer$.next({ time, percent });
       });
   }
