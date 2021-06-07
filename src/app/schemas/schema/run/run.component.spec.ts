@@ -1,5 +1,7 @@
+import { fakeAsync, flush, tick } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
+import { DateTime } from 'luxon';
 import { MaterialModule } from 'src/app/material.module';
 import { Autofixture } from 'ts-autofixture/dist/src';
 import { ExerciseDefault, Schema, SchemaDefault } from '../schema';
@@ -8,11 +10,11 @@ import { SchemasRunComponent } from './run.component';
 
 describe('RunComponent', () => {
   test('should create', async () => {
-    const { hasTitle, hasText, loadSchemaFromRoute, schemas } = await createComponent();
+    const { hasTitle, hasText, hasDigitalClockWithTicks, loadSchemaFromRoute, schemas } = await createComponent();
 
     hasText('1');
     hasText('Warmup');
-    hasText(`${schemas[0].warmup}:00`);
+    hasDigitalClockWithTicks(schemas[0].warmup, 0);
     hasTitle('Start warmup');
     hasTitle('Done');
 
@@ -22,7 +24,24 @@ describe('RunComponent', () => {
     hasText('3');
     hasText('Interval');
 
-    loadSchemaFromRoute()
+    loadSchemaFromRoute();
+  });
+
+  test('should count down when start warmup is clicked', async () => {
+    jest.useFakeTimers();
+    const { clickTitle, detectChanges, hasDigitalClockWithTicks, schemas } = await createComponent();
+
+    clickTitle("Start warmup");
+    hasDigitalClockWithTicks(schemas[0].warmup, 0);
+    jest.advanceTimersByTime(1000);
+    detectChanges();
+    hasDigitalClockWithTicks(schemas[0].warmup, 1);
+    jest.advanceTimersByTime(1000);
+    detectChanges();
+    hasDigitalClockWithTicks(schemas[0].warmup, 2);
+
+    jest.runOnlyPendingTimers();
+    jest.useRealTimers();
   });
 
   async function createComponent() {
@@ -44,8 +63,15 @@ describe('RunComponent', () => {
     return {
       ...rendered,
       schemas,
+      clickTitle: (title: string) => fireEvent.click(rendered.getByTitle(title)),
       hasTitle: (title: string) => rendered.getByTitle(title),
       hasText: (text: string) => rendered.getByText(text),
+      hasDigitalClockWithTicks: (minutes: number, ticks: number) => {
+        const clockValue = DateTime
+          .fromSeconds(minutes * 60)
+          .minus({ seconds: ticks });
+        rendered.getByText(clockValue.toFormat('mm:ss'));
+      },
       loadSchemaFromRoute: () => expect(rendered.fixture.componentInstance.schema).toEqual(schemas[0])
     };
   }
@@ -55,6 +81,11 @@ describe('RunComponent', () => {
       ...new SchemaDefault(),
       exercises: [new ExerciseDefault()]
     };
-    return new Autofixture().createMany<Schema>(schemaDefault);
+    return new Autofixture().createMany<Schema>(schemaDefault, 3, {
+      warmup: "0 < integer < 60",
+      intervalReps: '0 < integer < 20',
+      intervalDuration: '0 < integer < 60',
+      intervalPause: '0 < integer < 60',
+    });
   }
 });
