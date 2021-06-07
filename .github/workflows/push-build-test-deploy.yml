@@ -1,0 +1,25 @@
+name: Build, test and deploy
+on: [push]
+jobs:
+  build-test-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          check-latest: true
+      - run: npm ci
+      - run: npm run build
+      - run: npm run test
+      - name: Cypress run
+        uses: cypress-io/github-action@v2
+        with:
+          install: false
+          start: npm start
+      - name: Upload to blob storage
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_CREDENTIALS }} 
+          app_location: 'dist'
+          output_location: ''
+          skip_app_build: true
