@@ -15,6 +15,7 @@ export class SchemasRunComponent implements OnDestroy, OnInit {
   schema: Schema = new SchemaDefault();
   warmupTimer$ = new BehaviorSubject<{ time: DateTime, percent: number }>({ time: DateTime.fromSeconds(0), percent: 100 });
   warmupTimerSubscription: Subscription | null = null;
+  running = false;
 
   constructor(private router: Router) {
     const extras = this.router.getCurrentNavigation();
@@ -33,6 +34,7 @@ export class SchemasRunComponent implements OnDestroy, OnInit {
   }
 
   startWarmup() {
+    this.running = true;
     const warmupSeconds = this.schema.warmup * 60;
     this.warmupTimerSubscription = interval(1000)
       .pipe(take(warmupSeconds))

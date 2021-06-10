@@ -1,4 +1,3 @@
-import { fakeAsync, flush, tick } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { fireEvent, render } from '@testing-library/angular';
 import { DateTime } from 'luxon';
@@ -10,13 +9,17 @@ import { SchemasRunComponent } from './run.component';
 
 describe('RunComponent', () => {
   test('should create', async () => {
-    const { hasTitle, hasText, hasDigitalClockWithTicks, loadSchemaFromRoute, schemas } = await createComponent();
+    const { hasTitle, hasText, isDisabled, hasDigitalClockWithTicks, loadSchemaFromRoute, schemas } = await createComponent();
 
     hasText('1');
     hasText('Warmup');
     hasDigitalClockWithTicks(schemas[0].warmup, 0);
-    hasTitle('Start warmup');
-    hasTitle('Done');
+    hasTitle('Start');
+    hasTitle('Pauze');
+    isDisabled('Pauze');
+    hasTitle('Reset');
+    isDisabled('Reset');
+    hasTitle('Start exercises');
 
     hasText('2');
     hasText('Exercises');
@@ -29,9 +32,12 @@ describe('RunComponent', () => {
 
   test('should count down when start warmup is clicked', async () => {
     jest.useFakeTimers();
-    const { clickTitle, detectChanges, hasDigitalClockWithTicks, schemas } = await createComponent();
+    const { clickTitle, detectChanges, isDisabled, isEnabled, hasDigitalClockWithTicks, schemas } = await createComponent();
 
-    clickTitle("Start warmup");
+    clickTitle("Start");
+    isDisabled('Start');
+    isEnabled('Pauze');
+    isEnabled('Reset');
     hasDigitalClockWithTicks(schemas[0].warmup, 0);
     jest.advanceTimersByTime(1000);
     detectChanges();
@@ -39,6 +45,7 @@ describe('RunComponent', () => {
     jest.advanceTimersByTime(1000);
     detectChanges();
     hasDigitalClockWithTicks(schemas[0].warmup, 2);
+
 
     jest.runOnlyPendingTimers();
     jest.useRealTimers();
@@ -65,6 +72,8 @@ describe('RunComponent', () => {
       schemas,
       clickTitle: (title: string) => fireEvent.click(rendered.getByTitle(title)),
       hasTitle: (title: string) => rendered.getByTitle(title),
+      isDisabled: (title: string) => expect(rendered.getByTitle(title)).toBeDisabled(),
+      isEnabled: (title: string) => expect(rendered.getByTitle(title)).toBeEnabled(),
       hasText: (text: string) => rendered.getByText(text),
       hasDigitalClockWithTicks: (minutes: number, ticks: number) => {
         const clockValue = DateTime
