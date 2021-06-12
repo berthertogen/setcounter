@@ -59,6 +59,7 @@ describe('CreateComponent - overall', () => {
     click('Save schema');
 
     schemasSaved(1, {
+      id: 0,
       warmup: 10,
       exercise: new ExerciseDefault(),
       exercises: [
@@ -96,6 +97,7 @@ describe('CreateComponent - overall', () => {
     click('Save schema');
 
     const schema = {
+      id: 0,
       warmup: 10,
       exercise: new ExerciseDefault(),
       exercises: [

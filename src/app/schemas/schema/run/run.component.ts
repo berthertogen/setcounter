@@ -1,8 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { DateTime } from 'luxon';
 import { BehaviorSubject, interval, Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
+import { SchemasService } from '../../schemas.service';
 import { Schema, SchemaDefault } from '../schema';
 import { RunStore } from './run.store';
 
@@ -19,10 +20,11 @@ export class SchemasRunComponent implements OnDestroy, OnInit {
   warmupTimerSubscription: Subscription | null = null;
   running = false;
 
-  constructor(private router: Router) {
-    const extras = this.router.getCurrentNavigation();
-    if (extras && extras.extras.state) {
-      this.schema = JSON.parse(extras.extras.state.schema);
+  constructor(private route: ActivatedRoute, private schemaService: SchemasService) {
+    const schemaIdParameter = this.route.snapshot.paramMap.get('id');
+    if (schemaIdParameter) {
+      const schemaId = parseInt(schemaIdParameter);
+      this.schema = this.schemaService.getOne(schemaId);
     }
   }
   ngOnInit(): void {

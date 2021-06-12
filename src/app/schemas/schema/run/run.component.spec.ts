@@ -1,8 +1,9 @@
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { fireEvent, render } from '@testing-library/angular';
 import { DateTime } from 'luxon';
 import { MaterialModule } from 'src/app/material.module';
 import { Autofixture } from 'ts-autofixture/dist/src';
+import { SchemasService } from '../../schemas.service';
 import { ExerciseDefault, Schema, SchemaDefault } from '../schema';
 
 import { SchemasRunComponent } from './run.component';
@@ -52,19 +53,20 @@ describe('RunComponent', () => {
   });
 
   async function createComponent() {
-    const schemas = mockSchemas();
-    const router = { getCurrentNavigation: jest.fn() };
-    router.getCurrentNavigation.mockImplementation(() => ({
-      extras: {
-        state: {
-          schema: JSON.stringify(schemas[0])
+    const { schemas, getOne } = mockSchemaService();
+    const route = {
+      snapshot: {
+        paramMap: {
+          get: jest.fn()
         }
       }
-    }))
+    };
+    route.snapshot.paramMap.get.mockImplementation(() => 5)
     const rendered = await render(SchemasRunComponent, {
       imports: [MaterialModule],
       providers: [
-        { provide: Router, useValue: router }
+        { provide: ActivatedRoute, useValue: route },
+        { provide: SchemasService, useValue: { getOne } }
       ]
     });
     return {
@@ -81,20 +83,32 @@ describe('RunComponent', () => {
           .minus({ seconds: ticks });
         rendered.getByText(clockValue.toFormat('mm:ss'));
       },
-      loadSchemaFromRoute: () => expect(rendered.fixture.componentInstance.schema).toEqual(schemas[0])
+      loadSchemaFromRoute: () => {
+        expect(route.snapshot.paramMap.get).toHaveBeenCalledTimes(1);
+        expect(getOne).toHaveBeenNthCalledWith(1, 5);
+        expect(rendered.fixture.componentInstance.schema).toEqual(schemas[0])
+      }
     };
   }
 
-  function mockSchemas() {
+  function mockSchemaService() {
     const schemaDefault = {
-      ...new SchemaDefault(),
+      ...new SchemaDefault(5),
       exercises: [new ExerciseDefault()]
     };
-    return new Autofixture().createMany<Schema>(schemaDefault, 3, {
+    const schemas = new Autofixture().createMany<Schema>(schemaDefault, 3, {
       warmup: "0 < integer < 60",
       intervalReps: '0 < integer < 20',
       intervalDuration: '0 < integer < 60',
       intervalPause: '0 < integer < 60',
     });
+    const getOne = jest.fn();
+    getOne
+      .mockReset()
+      .mockImplementation((id) => schemas[0]);
+    return {
+      schemas,
+      getOne
+    };
   }
 });

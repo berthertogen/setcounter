@@ -9,6 +9,7 @@ export class ExerciseDefault implements Exercise {
 }
 
 export interface Schema {
+    id: number;
     warmup: number;
     exercise: Exercise;
     exercises: Exercise[];
@@ -20,6 +21,10 @@ export interface Schema {
 }
 
 export class SchemaDefault implements Schema {
+    constructor(id?: number) {
+        this.id = id || 0;
+    }
+    id = 0;
     warmup = 10;
     exercise = new ExerciseDefault();
     exercises = [];

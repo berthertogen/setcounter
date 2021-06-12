@@ -34,11 +34,11 @@ describe('ListComponent', () => {
   });
 
   test('should remove schema from list when Delete schema event is fired', async () => {
-    const { clickNthByTitle, schemasRemoved, schemasLoaded } = await createComponentWithSchemas();
+    const { clickNthByTitle, schemasRemoved, schemasLoaded, schemas } = await createComponentWithSchemas();
 
     clickNthByTitle('- Delete schema', 0);
 
-    schemasRemoved(1, 0);
+    schemasRemoved(1, schemas[0].id);
     schemasLoaded(2);
   });
 
@@ -47,7 +47,7 @@ describe('ListComponent', () => {
 
     clickNthByTitle('Run schema', 0);
 
-    navigatedToRun(schemas[0]);
+    navigatedToRun(schemas[0].id);
   });
 
   async function createComponent() {
@@ -60,12 +60,12 @@ describe('ListComponent', () => {
 
   async function createComponentWithExtras(schemas: Schema[]) {
     const router = { navigate: jest.fn() };
-    const { get, remove } = mockSchemaService(schemas);
+    const { getAll, remove } = mockSchemaService(schemas);
     const rendered = await render(SchemasListComponent, {
       imports: [MatCardModule, MaterialModule],
       providers: [
         { provide: Router, useValue: router },
-        { provide: SchemasService, useValue: { get, remove } }
+        { provide: SchemasService, useValue: { getAll, remove } }
       ]
     });
     return {
@@ -76,30 +76,30 @@ describe('ListComponent', () => {
       notHasText: (text: string) => expect(rendered.queryByText(text)).toBeNull(),
       clickNthByTitle: (text: string, index: number) => userEvent.click(rendered.getAllByTitle(text)[index]),
       schemasLoaded: (times: number) => {
-        expect(get).toHaveBeenCalledTimes(times);
+        expect(getAll).toHaveBeenCalledTimes(times);
         expect(rendered.fixture.componentInstance.schemas).toEqual(schemas);
       },
       schemasRemoved: (times: number, index: number) => {
         expect(remove).toHaveBeenNthCalledWith(times, index);
       },
-      navigatedToRun: (schema: Schema) => expect(router.navigate).toHaveBeenNthCalledWith(1, ['schemas', 'run'], { state: { schema: JSON.stringify(schema) } })
+      navigatedToRun: (schemaId: number) => expect(router.navigate).toHaveBeenNthCalledWith(1, ['schemas', 'run', schemaId])
     };
   }
 
   function mockSchemaService(schemas: Schema[]) {
-    const get = jest.fn();
+    const getAll = jest.fn();
     const remove = jest.fn();
-    get
+    getAll
       .mockReset()
       .mockImplementation(() => schemas);
     remove
       .mockReset();
-    return { get, remove };
+    return { getAll, remove };
   }
 
   function mockSchemas() {
     const schemaDefault = {
-      ...new SchemaDefault(),
+      ...new SchemaDefault(1),
       exercises: [new ExerciseDefault()]
     };
     return new Autofixture().createMany<Schema>(schemaDefault);

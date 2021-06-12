@@ -10,21 +10,17 @@ import { SchemasService } from '../schemas.service';
 })
 export class SchemasListComponent {
 
-  schemas: Schema[] = this.schemasService.get();
+  schemas: Schema[] = this.schemasService.getAll();
 
   constructor(private router: Router, private schemasService: SchemasService) { }
 
   delete(schema: Schema) {
-    const indexOf = this.schemas.indexOf(schema);
-    this.schemasService.remove(indexOf);
-    this.schemas = this.schemasService.get();
+    this.schemasService.remove(schema.id);
+    this.schemas = this.schemasService.getAll();
   }
 
   run(schema: Schema) {
-    this.router.navigate(['schemas', 'run'], {
-      state: {
-        schema: JSON.stringify(schema)
-      }
-    });
+    console.log(schema);
+    this.router.navigate(['schemas', 'run', schema.id]);
   }
 }

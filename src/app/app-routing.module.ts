@@ -11,7 +11,7 @@ export const routes: Routes = [
     children: [
       { path: 'list', component: SchemasListComponent },
       { path: 'create', component: SchemasCreateComponent },
-      { path: 'run', component: SchemasRunComponent },
+      { path: 'run/:id', component: SchemasRunComponent },
       { path: '**', redirectTo: 'list' }
     ]
   },

@@ -7,7 +7,7 @@ describe('SchemasService', () => {
         const { getItem } = mockLocalStorage(mockSchemas)
         const service = new SchemasService();
 
-        const schemas = service.get();
+        const schemas = service.getAll();
 
         expect(schemas).toEqual(mockSchemas);
         expect(getItem).toHaveBeenCalledTimes(1);
@@ -16,28 +16,50 @@ describe('SchemasService', () => {
     test('get should return empty [] when localStorage doesnt have item', async () => {
         const service = new SchemasService();
         const { getItem } = mockLocalStorage();
-        const schemas = service.get();
+        const schemas = service.getAll();
 
         expect(schemas).toEqual([]);
         expect(getItem).toHaveBeenCalledTimes(1);
     });
+
+    test('get(id) should return the correct schema', async () => {
+        const mockSchemas = [new SchemaDefault(1), new SchemaDefault(2), new SchemaDefault(3)];
+        const service = new SchemasService();
+        const { getItem } = mockLocalStorage(mockSchemas);
+
+        const schema = service.getOne(2);
+
+        expect(schema).toEqual(mockSchemas[1]);
+        expect(getItem).toHaveBeenCalledTimes(1);
+    });
+
+    test('get(id) should throw error if schema is not found', async () => {
+        const service = new SchemasService();
+        mockLocalStorage();
+
+        expect(() => service.getOne(5)).toThrowError(new RangeError(`No schema found for id ${5}`));
+    });
+
 
     test('add should add schema to schemas in localStorage', async () => {
         const mockSchema = new SchemaDefault();
         const { setItem } = mockLocalStorage();
         const service = new SchemasService();
 
-        service.add(mockSchema);
+        service.add(new SchemaDefault());
 
-        expect(setItem).toHaveBeenNthCalledWith(1, "setcounter-schemas", JSON.stringify([mockSchema]));
+        expect(setItem).toHaveBeenNthCalledWith(1, "setcounter-schemas", JSON.stringify([{
+            ...new SchemaDefault(),
+            id: 1
+        }]));
     });
 
     test('delete should remove the schema from schemas and update localStorage', async () => {
-        const mockSchemas = [new SchemaDefault(), new SchemaDefault(), new SchemaDefault()];
+        const mockSchemas = [new SchemaDefault(1), new SchemaDefault(2), new SchemaDefault(3)];
         const { setItem } = mockLocalStorage(mockSchemas);
         const service = new SchemasService();
 
-        service.remove(1);
+        service.remove(2);
 
         expect(setItem).toHaveBeenNthCalledWith(1, "setcounter-schemas", JSON.stringify([mockSchemas[0], mockSchemas[2]]));
     });
