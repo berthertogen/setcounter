@@ -1,14 +1,16 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { DateTime } from 'luxon';
-import { BehaviorSubject, interval, Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, interval, Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { Schema, SchemaDefault } from '../schema';
+import { RunStore } from './run.store';
 
 @Component({
   selector: 'app-schemas-run',
   templateUrl: './run.component.html',
-  styleUrls: ['./run.component.sass']
+  styleUrls: ['./run.component.sass'],
+  providers: [RunStore],
 })
 export class SchemasRunComponent implements OnDestroy, OnInit {
 
