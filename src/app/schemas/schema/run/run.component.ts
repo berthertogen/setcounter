@@ -1,10 +1,7 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, OnDestroy } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { DateTime } from 'luxon';
-import { BehaviorSubject, interval, Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
-import { SchemasService } from '../../schemas.service';
-import { Schema, SchemaDefault } from '../schema';
+import { Observable, Subscription, timer } from 'rxjs';
 import { RunStore } from './run.store';
 
 @Component({
@@ -13,22 +10,14 @@ import { RunStore } from './run.store';
   styleUrls: ['./run.component.sass'],
   providers: [RunStore],
 })
-export class SchemasRunComponent implements OnDestroy, OnInit {
+export class SchemasRunComponent implements OnDestroy {
 
-  schema: Schema = new SchemaDefault();
-  warmupTimer$ = new BehaviorSubject<{ time: DateTime, percent: number }>({ time: DateTime.fromSeconds(0), percent: 100 });
+  warmupTimer$: Observable<{ time: DateTime, percent: number }> = this.runStore.warmupTimer$;
   warmupTimerSubscription: Subscription | null = null;
-  running = false;
+  running$: Observable<boolean> = this.runStore.timerRunning$;
 
-  constructor(private route: ActivatedRoute, private schemaService: SchemasService) {
-    const schemaIdParameter = this.route.snapshot.paramMap.get('id');
-    if (schemaIdParameter) {
-      const schemaId = parseInt(schemaIdParameter);
-      this.schema = this.schemaService.getOne(schemaId);
-    }
-  }
-  ngOnInit(): void {
-    this.warmupTimer$.next({ time: this.toDateTime(this.schema.warmup * 60), percent: 100 });
+  constructor(private route: ActivatedRoute, private readonly runStore: RunStore) {
+    this.runStore.getSchema(this.route.snapshot.paramMap.get('id'));
   }
 
   ngOnDestroy(): void {
@@ -38,18 +27,6 @@ export class SchemasRunComponent implements OnDestroy, OnInit {
   }
 
   startWarmup() {
-    this.running = true;
-    const warmupSeconds = this.schema.warmup * 60;
-    this.warmupTimerSubscription = interval(1000)
-      .pipe(take(warmupSeconds))
-      .subscribe(ellapsed => {
-        const time = this.toDateTime(warmupSeconds - (ellapsed + 1));
-        const percent = 100 - (100 * ellapsed / warmupSeconds) - 1;
-        this.warmupTimer$.next({ time, percent });
-      });
-  }
-
-  private toDateTime(seconds: number): DateTime {
-    return DateTime.fromSeconds(seconds);
+    this.runStore.startWarmup(timer(0, 1000))
   }
 }

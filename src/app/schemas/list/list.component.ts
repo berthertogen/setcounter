@@ -20,7 +20,6 @@ export class SchemasListComponent {
   }
 
   run(schema: Schema) {
-    console.log(schema);
     this.router.navigate(['schemas', 'run', schema.id]);
   }
 }

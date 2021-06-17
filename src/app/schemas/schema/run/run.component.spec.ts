@@ -1,6 +1,7 @@
 import { ActivatedRoute, Router } from '@angular/router';
 import { fireEvent, render } from '@testing-library/angular';
 import { DateTime } from 'luxon';
+import { of } from 'rxjs';
 import { MaterialModule } from 'src/app/material.module';
 import { Autofixture } from 'ts-autofixture/dist/src';
 import { SchemasService } from '../../schemas.service';
@@ -36,17 +37,18 @@ describe('RunComponent', () => {
     const { clickTitle, detectChanges, isDisabled, isEnabled, hasDigitalClockWithTicks, schemas } = await createComponent();
 
     clickTitle("Start");
+    jest.advanceTimersByTime(1);
+    detectChanges();
     isDisabled('Start');
     isEnabled('Pauze');
     isEnabled('Reset');
-    hasDigitalClockWithTicks(schemas[0].warmup, 0);
-    jest.advanceTimersByTime(1000);
-    detectChanges();
     hasDigitalClockWithTicks(schemas[0].warmup, 1);
     jest.advanceTimersByTime(1000);
     detectChanges();
     hasDigitalClockWithTicks(schemas[0].warmup, 2);
-
+    jest.advanceTimersByTime(1000);
+    detectChanges();
+    hasDigitalClockWithTicks(schemas[0].warmup, 3);
 
     jest.runOnlyPendingTimers();
     jest.useRealTimers();
@@ -86,7 +88,6 @@ describe('RunComponent', () => {
       loadSchemaFromRoute: () => {
         expect(route.snapshot.paramMap.get).toHaveBeenCalledTimes(1);
         expect(getOne).toHaveBeenNthCalledWith(1, 5);
-        expect(rendered.fixture.componentInstance.schema).toEqual(schemas[0])
       }
     };
   }
@@ -105,7 +106,7 @@ describe('RunComponent', () => {
     const getOne = jest.fn();
     getOne
       .mockReset()
-      .mockImplementation((id) => schemas[0]);
+      .mockImplementation((id) => of(schemas[0]));
     return {
       schemas,
       getOne

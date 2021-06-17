@@ -1,4 +1,5 @@
 import { Injectable } from "@angular/core";
+import { Observable, of } from "rxjs";
 import { Schema, SchemaDefault } from "./schema/schema";
 
 @Injectable({ providedIn: 'root' })
@@ -24,12 +25,12 @@ export class SchemasService {
             : [];
     }
 
-    getOne(id: number): Schema {
+    getOne(id: number): Observable<Schema> {
         let schemas = this.getAll();
         const schema = schemas.find(schema => schema.id === id);
         if (!schema)
             throw new RangeError(`No schema found for id ${id}`);
-        return schema;
+        return of(schema);
     }
 
     private set(schemas: Schema[]) {

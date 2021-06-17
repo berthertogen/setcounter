@@ -27,10 +27,10 @@ describe('SchemasService', () => {
         const service = new SchemasService();
         const { getItem } = mockLocalStorage(mockSchemas);
 
-        const schema = service.getOne(2);
-
-        expect(schema).toEqual(mockSchemas[1]);
-        expect(getItem).toHaveBeenCalledTimes(1);
+        service.getOne(2).subscribe((schema) => {
+            expect(schema).toEqual(mockSchemas[1]);
+            expect(getItem).toHaveBeenCalledTimes(1);
+        });
     });
 
     test('get(id) should throw error if schema is not found', async () => {
