@@ -1,12 +1,11 @@
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { render } from '@testing-library/angular'
-import userEvent from '@testing-library/user-event'
+import { render } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
 import { MaterialModule } from 'src/app/material.module';
 import { SchemasCreateComponent } from './create.component';
 
 describe('CreateComponent - fields', () => {
-
   test('should update warmup value when sliding the range', async () => {
     const { getByText, changeSlider, fixture } = await createComponent();
 
@@ -19,7 +18,7 @@ describe('CreateComponent - fields', () => {
   test('should update reps value when typing the reps', async () => {
     const { type, fixture } = await createComponent();
 
-    type('Reps', "4");
+    type('Reps', '4');
 
     expect(fixture.componentInstance.schema.exercise.reps).toBe(4);
   });
@@ -39,7 +38,7 @@ describe('CreateComponent - fields', () => {
   test('should update sets value when typing the sets', async () => {
     const { type, fixture } = await createComponent();
 
-    type('Sets', "4");
+    type('Sets', '4');
 
     expect(fixture.componentInstance.schema.exercise.sets).toBe(4);
   });
@@ -116,16 +115,14 @@ describe('CreateComponent - fields', () => {
 async function createComponent() {
   const rendered = await render(SchemasCreateComponent, {
     imports: [FormsModule, MaterialModule],
-    providers: [
-      { provide: Router, useValue: { navigate: jest.fn() }}
-    ]
+    providers: [{ provide: Router, useValue: { navigate: jest.fn() } }],
   });
   return {
     ...rendered,
     click: (text: string) => userEvent.click(rendered.getByText(text)),
     clickByTitle: (title: string, times?: number) => {
       for (let index = 0; index < (times || 1); index++) {
-        userEvent.click(rendered.getByTitle(title))
+        userEvent.click(rendered.getByTitle(title));
       }
     },
     clickAllByTitle: (title: string, indexToClick: number) => {

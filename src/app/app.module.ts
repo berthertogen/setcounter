@@ -12,22 +12,9 @@ import { AppRoutingModule } from './app-routing.module';
 import { SchemasRunComponent } from './schemas/schema/run/run.component';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    SchemasComponent,
-    SchemasCreateComponent,
-    SchemasListComponent,
-    SchemasRunComponent,
-  ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    FormsModule,
-    ReactiveFormsModule,
-    BrowserAnimationsModule,
-    MaterialModule,
-  ],
+  declarations: [AppComponent, SchemasComponent, SchemasCreateComponent, SchemasListComponent, SchemasRunComponent],
+  imports: [BrowserModule, AppRoutingModule, FormsModule, ReactiveFormsModule, BrowserAnimationsModule, MaterialModule],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

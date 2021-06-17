@@ -1,4 +1,4 @@
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { fireEvent, render } from '@testing-library/angular';
 import { DateTime } from 'luxon';
 import { of } from 'rxjs';
@@ -11,7 +11,8 @@ import { SchemasRunComponent } from './run.component';
 
 describe('RunComponent', () => {
   test('should create', async () => {
-    const { hasTitle, hasText, isDisabled, hasDigitalClockWithTicks, loadSchemaFromRoute, schemas } = await createComponent();
+    const { hasTitle, hasText, isDisabled, hasDigitalClockWithTicks, loadSchemaFromRoute, schemas } =
+      await createComponent();
 
     hasText('1');
     hasText('Warmup');
@@ -34,9 +35,10 @@ describe('RunComponent', () => {
 
   test('should count down when start warmup is clicked', async () => {
     jest.useFakeTimers();
-    const { clickTitle, detectChanges, isDisabled, isEnabled, hasDigitalClockWithTicks, schemas } = await createComponent();
+    const { clickTitle, detectChanges, isDisabled, isEnabled, hasDigitalClockWithTicks, schemas } =
+      await createComponent();
 
-    clickTitle("Start");
+    clickTitle('Start');
     jest.advanceTimersByTime(1);
     detectChanges();
     isDisabled('Start');
@@ -59,17 +61,17 @@ describe('RunComponent', () => {
     const route = {
       snapshot: {
         paramMap: {
-          get: jest.fn()
-        }
-      }
+          get: jest.fn(),
+        },
+      },
     };
-    route.snapshot.paramMap.get.mockImplementation(() => 5)
+    route.snapshot.paramMap.get.mockImplementation(() => 5);
     const rendered = await render(SchemasRunComponent, {
       imports: [MaterialModule],
       providers: [
         { provide: ActivatedRoute, useValue: route },
-        { provide: SchemasService, useValue: { getOne } }
-      ]
+        { provide: SchemasService, useValue: { getOne } },
+      ],
     });
     return {
       ...rendered,
@@ -80,36 +82,32 @@ describe('RunComponent', () => {
       isEnabled: (title: string) => expect(rendered.getByTitle(title)).toBeEnabled(),
       hasText: (text: string) => rendered.getByText(text),
       hasDigitalClockWithTicks: (minutes: number, ticks: number) => {
-        const clockValue = DateTime
-          .fromSeconds(minutes * 60)
-          .minus({ seconds: ticks });
+        const clockValue = DateTime.fromSeconds(minutes * 60).minus({ seconds: ticks });
         rendered.getByText(clockValue.toFormat('mm:ss'));
       },
       loadSchemaFromRoute: () => {
         expect(route.snapshot.paramMap.get).toHaveBeenCalledTimes(1);
         expect(getOne).toHaveBeenNthCalledWith(1, 5);
-      }
+      },
     };
   }
 
   function mockSchemaService() {
     const schemaDefault = {
       ...new SchemaDefault(5),
-      exercises: [new ExerciseDefault()]
+      exercises: [new ExerciseDefault()],
     };
     const schemas = new Autofixture().createMany<Schema>(schemaDefault, 3, {
-      warmup: "0 < integer < 60",
+      warmup: '0 < integer < 60',
       intervalReps: '0 < integer < 20',
       intervalDuration: '0 < integer < 60',
       intervalPause: '0 < integer < 60',
     });
     const getOne = jest.fn();
-    getOne
-      .mockReset()
-      .mockImplementation((id) => of(schemas[0]));
+    getOne.mockReset().mockImplementation(() => of(schemas[0]));
     return {
       schemas,
-      getOne
+      getOne,
     };
   }
 });

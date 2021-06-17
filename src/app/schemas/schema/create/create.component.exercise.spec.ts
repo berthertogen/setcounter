@@ -1,9 +1,9 @@
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { fireEvent, render } from '@testing-library/angular'
-import userEvent from '@testing-library/user-event'
+import { render } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
 import { MaterialModule } from 'src/app/material.module';
-import { ExerciseDefault, Schema } from 'src/app/schemas/schema/schema';
+import { Schema } from 'src/app/schemas/schema/schema';
 import { SchemasCreateComponent } from './create.component';
 
 describe('CreateComponent - exercises', () => {
@@ -15,7 +15,7 @@ describe('CreateComponent - exercises', () => {
     click('+ Add exercise');
 
     expect(queryByText('No exercises added yet.')).toBeNull();
-    getByText("Reps 4 & Sets 13");
+    getByText('Reps 4 & Sets 13');
 
     expect(fixture.componentInstance.schema.exercise.reps).toBe(3);
     expect(fixture.componentInstance.schema.exercise.sets).toBe(12);
@@ -36,35 +36,27 @@ describe('CreateComponent - exercises', () => {
     clickByTitle('Plus set', 2);
     click('+ Add exercise');
 
-    expect(queryAllByText("Reps 4 & Sets 13").length).toBe(2);
-    expect(queryAllByText("Reps 5 & Sets 14").length).toBe(1);
+    expect(queryAllByText('Reps 4 & Sets 13').length).toBe(2);
+    expect(queryAllByText('Reps 5 & Sets 14').length).toBe(1);
 
     clickAllByTitle('Remove excercise', 1);
 
-    expect(queryAllByText("Reps 4 & Sets 13").length).toBe(1);
-    expect(queryAllByText("Reps 5 & Sets 14").length).toBe(1);
+    expect(queryAllByText('Reps 4 & Sets 13').length).toBe(1);
+    expect(queryAllByText('Reps 5 & Sets 14').length).toBe(1);
   });
 });
 
 async function createComponent() {
-  const saveEmitSpy = jest.fn();
   const rendered = await render(SchemasCreateComponent, {
     imports: [FormsModule, MaterialModule],
-    componentProperties: {
-      save: {
-        emit: saveEmitSpy,
-      } as any
-    },
-    providers: [
-      { provide: Router, useValue: { navigate: jest.fn() }}
-    ]
+    providers: [{ provide: Router, useValue: { navigate: jest.fn() } }],
   });
   return {
     ...rendered,
     click: (text: string) => userEvent.click(rendered.getByText(text)),
     clickByTitle: (title: string, times?: number) => {
       for (let index = 0; index < (times || 1); index++) {
-        userEvent.click(rendered.getByTitle(title))
+        userEvent.click(rendered.getByTitle(title));
       }
     },
     clickAllByTitle: (title: string, indexToClick: number) => {
@@ -80,6 +72,5 @@ async function createComponent() {
       userEvent.clear(input);
       userEvent.type(input, value);
     },
-    saveNthCalledWith: (times: number, schema: Schema) => expect(saveEmitSpy).toHaveBeenNthCalledWith(times, schema),
   };
 }

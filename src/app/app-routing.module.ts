@@ -7,22 +7,21 @@ import { SchemasComponent } from './schemas/schemas.component';
 
 export const routes: Routes = [
   {
-    path: 'schemas', component: SchemasComponent,
+    path: 'schemas',
+    component: SchemasComponent,
     children: [
       { path: 'list', component: SchemasListComponent },
       { path: 'create', component: SchemasCreateComponent },
       { path: 'run/:id', component: SchemasRunComponent },
-      { path: '**', redirectTo: 'list' }
-    ]
+      { path: '**', redirectTo: 'list' },
+    ],
   },
-  { path: '**', redirectTo: 'schemas' }
+  { path: '**', redirectTo: 'schemas' },
 ];
 
 @NgModule({
   declarations: [],
-  imports: [
-    RouterModule.forRoot(routes)
-  ],
-  exports: [RouterModule]
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

@@ -1,41 +1,46 @@
 <mat-vertical-stepper [linear]="true" #stepper>
-    <mat-step>
-        <form>
-            <ng-template matStepLabel>Warmup</ng-template>
-            <ng-container *ngIf="warmupTimer$ | async as warmupTimer">
-                <mat-progress-spinner color="accent" mode="determinate" [value]="warmupTimer.percent" [diameter]="220"
-                    [strokeWidth]="8">
-                </mat-progress-spinner>
-                <span class="time">{{warmupTimer.time.toFormat("mm:ss")}}</span>
-            </ng-container>
-        </form>
-        <div class="actions">
-            <button mat-button color="accent" title="Start" (click)="startWarmup()" [disabled]="running$ | async">
-                <mat-icon>play_arrow</mat-icon>Start
-            </button>
-            <button mat-button title="Pauze" [disabled]="!(running$ | async)">
-                <mat-icon>pause</mat-icon>Pauze
-            </button>
-            <button mat-button title="Reset" [disabled]="!(running$ | async)">
-                <mat-icon>replay</mat-icon>Reset
-            </button>
-        </div>
-        <button mat-raised-button color="primary" matStepperNext title="Start exercises">Start exercises</button>
-    </mat-step>
-    <mat-step>
-        <form>
-            <ng-template matStepLabel>Exercises</ng-template>
-            <!-- <div>
+  <mat-step>
+    <form>
+      <ng-template matStepLabel>Warmup</ng-template>
+      <ng-container *ngIf="warmupTimer$ | async as warmupTimer">
+        <mat-progress-spinner
+          color="accent"
+          mode="determinate"
+          [value]="warmupTimer.percent"
+          [diameter]="220"
+          [strokeWidth]="8"
+        >
+        </mat-progress-spinner>
+        <span class="time">{{ warmupTimer.time.toFormat('mm:ss') }}</span>
+      </ng-container>
+    </form>
+    <div class="actions">
+      <button mat-button color="accent" title="Start" (click)="startWarmup()" [disabled]="running$ | async">
+        <mat-icon>play_arrow</mat-icon>Start
+      </button>
+      <button mat-button title="Pauze" [disabled]="(running$ | async) === false">
+        <mat-icon>pause</mat-icon>Pauze
+      </button>
+      <button mat-button title="Reset" [disabled]="(running$ | async) === false">
+        <mat-icon>replay</mat-icon>Reset
+      </button>
+    </div>
+    <button mat-raised-button color="primary" matStepperNext title="Start exercises">Start exercises</button>
+  </mat-step>
+  <mat-step>
+    <form>
+      <ng-template matStepLabel>Exercises</ng-template>
+      <!-- <div>
                 <button mat-button matStepperNext>Next</button>
             </div> -->
-        </form>
-    </mat-step>
-    <mat-step>
-        <form>
-            <ng-template matStepLabel>Interval</ng-template>
-            <!-- <div>
+    </form>
+  </mat-step>
+  <mat-step>
+    <form>
+      <ng-template matStepLabel>Interval</ng-template>
+      <!-- <div>
                 <button mat-button matStepperNext>Next</button>
             </div> -->
-        </form>
-    </mat-step>
+    </form>
+  </mat-step>
 </mat-vertical-stepper>

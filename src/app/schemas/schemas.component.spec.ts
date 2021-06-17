@@ -19,7 +19,7 @@ describe('SchemasComponent', () => {
   async function createComponent() {
     const rendered = await render(SchemasComponent, {
       declarations: [SchemasCreateComponent, SchemasListComponent, SchemasRunComponent],
-      imports: [FormsModule, MaterialModule, RouterTestingModule.withRoutes(routes)]
+      imports: [FormsModule, MaterialModule, RouterTestingModule.withRoutes(routes)],
     });
     return {
       ...rendered,

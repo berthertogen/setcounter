@@ -1,31 +1,33 @@
 <mat-card *ngIf="schemas.length === 0">
-    <p>No schema's found.</p>
+  <p>No schema's found.</p>
 </mat-card>
 
 <ng-container *ngFor="let schema of schemas">
-    <mat-card>
-        <mat-card-content>
-            <p>Warmup {{schema.warmup}} minutes</p>
-            <mat-divider></mat-divider>
-            <ng-container *ngFor="let exercise of schema.exercises">
-                <p>{{exercise.reps}} reps of {{exercise.sets}} sets</p>
-            </ng-container>
-            <p>with {{schema.pauseReps}} seconds between reps and {{schema.pauseExercise}} seconds between exercise</p>
-            <mat-divider></mat-divider>
-            <p>{{schema.intervalReps}} x interval {{schema.intervalDuration}} seconds on and {{schema.intervalPause}}
-                seconds off</p>
-        </mat-card-content>
-        <mat-card-actions>
-            <button mat-icon-button title="Run schema" (click)="run(schema)">
-                <mat-icon>play_arrow</mat-icon>
-            </button>
-            <button mat-icon-button title="- Delete schema" (click)="delete(schema)">
-                <mat-icon>delete</mat-icon>
-            </button>
-        </mat-card-actions>
-    </mat-card>
+  <mat-card>
+    <mat-card-content>
+      <p>Warmup {{ schema.warmup }} minutes</p>
+      <mat-divider></mat-divider>
+      <ng-container *ngFor="let exercise of schema.exercises">
+        <p>{{ exercise.reps }} reps of {{ exercise.sets }} sets</p>
+      </ng-container>
+      <p>with {{ schema.pauseReps }} seconds between reps and {{ schema.pauseExercise }} seconds between exercise</p>
+      <mat-divider></mat-divider>
+      <p>
+        {{ schema.intervalReps }} x interval {{ schema.intervalDuration }} seconds on and
+        {{ schema.intervalPause }} seconds off
+      </p>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-icon-button title="Run schema" (click)="run(schema)">
+        <mat-icon>play_arrow</mat-icon>
+      </button>
+      <button mat-icon-button title="- Delete schema" (click)="delete(schema)">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </mat-card-actions>
+  </mat-card>
 </ng-container>
 
 <button class="btn-add" mat-fab color="primary" routerLink="/schemas/create" title="+ Create schema">
-    <mat-icon>add</mat-icon>
+  <mat-icon>add</mat-icon>
 </button>

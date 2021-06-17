@@ -6,48 +6,48 @@ import { SchemasService } from '../../schemas.service';
 @Component({
   selector: 'app-schemas-create',
   templateUrl: './create.component.html',
-  styleUrls: ['./create.component.sass']
+  styleUrls: ['./create.component.sass'],
 })
 export class SchemasCreateComponent {
   schema: Schema = new SchemaDefault();
 
-  constructor(private router: Router, private schemasService: SchemasService) { }
+  constructor(private router: Router, private schemasService: SchemasService) {}
 
-  plusRep() {
+  plusRep(): void {
     this.schema.exercise.reps++;
   }
-  minusRep() {
+  minusRep(): void {
     this.schema.exercise.reps--;
   }
-  plusSet() {
+  plusSet(): void {
     this.schema.exercise.sets++;
   }
-  minusSet() {
+  minusSet(): void {
     this.schema.exercise.sets--;
   }
-  plusIntervalRep() {
+  plusIntervalRep(): void {
     this.schema.intervalReps++;
   }
-  minusIntervalRep() {
+  minusIntervalRep(): void {
     this.schema.intervalReps--;
   }
 
-  addExercise() {
+  addExercise(): void {
     this.schema.exercises.push(this.schema.exercise);
     this.schema.exercise = new ExerciseDefault();
   }
 
-  removeExercise(exercise: Exercise) {
+  removeExercise(exercise: Exercise): void {
     const index = this.schema.exercises.indexOf(exercise);
     this.schema.exercises.splice(index, 1);
   }
 
-  save(schema: Schema) {
+  save(schema: Schema): void {
     this.schemasService.add(schema);
-    this.router.navigate(['schemas', 'list']);
+    void this.router.navigate(['schemas', 'list']);
   }
 
-  cancel() {
-    this.router.navigate(['schemas', 'list']);
+  cancel(): void {
+    void this.router.navigate(['schemas', 'list']);
   }
 }

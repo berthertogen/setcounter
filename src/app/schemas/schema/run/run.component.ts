@@ -11,8 +11,7 @@ import { RunStore } from './run.store';
   providers: [RunStore],
 })
 export class SchemasRunComponent implements OnDestroy {
-
-  warmupTimer$: Observable<{ time: DateTime, percent: number }> = this.runStore.warmupTimer$;
+  warmupTimer$: Observable<{ time: DateTime; percent: number }> = this.runStore.warmupTimer$;
   warmupTimerSubscription: Subscription | null = null;
   running$: Observable<boolean> = this.runStore.timerRunning$;
 
@@ -26,7 +25,7 @@ export class SchemasRunComponent implements OnDestroy {
     }
   }
 
-  startWarmup() {
-    this.runStore.startWarmup(timer(0, 1000))
+  startWarmup(): void {
+    this.runStore.startWarmup(timer(0, 1000));
   }
 }

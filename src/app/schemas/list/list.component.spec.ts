@@ -13,7 +13,7 @@ describe('ListComponent', () => {
   test('should have text No schemas when no schemas are found', async () => {
     const { hasText, hasTitle } = await createComponent();
 
-    hasTitle("+ Create schema");
+    hasTitle('+ Create schema');
     hasText("No schema's found.");
   });
 
@@ -29,7 +29,9 @@ describe('ListComponent', () => {
         hasText(`${exercise.reps} reps of ${exercise.sets} sets`);
       }
       hasText(`with ${schema.pauseReps} seconds between reps and ${schema.pauseExercise} seconds between exercise`);
-      hasText(`${schema.intervalReps} x interval ${schema.intervalDuration} seconds on and ${schema.intervalPause} seconds off`);
+      hasText(
+        `${schema.intervalReps} x interval ${schema.intervalDuration} seconds on and ${schema.intervalPause} seconds off`
+      );
     }
   });
 
@@ -65,8 +67,8 @@ describe('ListComponent', () => {
       imports: [MatCardModule, MaterialModule],
       providers: [
         { provide: Router, useValue: router },
-        { provide: SchemasService, useValue: { getAll, remove } }
-      ]
+        { provide: SchemasService, useValue: { getAll, remove } },
+      ],
     });
     return {
       ...rendered,
@@ -82,25 +84,23 @@ describe('ListComponent', () => {
       schemasRemoved: (times: number, index: number) => {
         expect(remove).toHaveBeenNthCalledWith(times, index);
       },
-      navigatedToRun: (schemaId: number) => expect(router.navigate).toHaveBeenNthCalledWith(1, ['schemas', 'run', schemaId])
+      navigatedToRun: (schemaId: number) =>
+        expect(router.navigate).toHaveBeenNthCalledWith(1, ['schemas', 'run', schemaId]),
     };
   }
 
   function mockSchemaService(schemas: Schema[]) {
     const getAll = jest.fn();
     const remove = jest.fn();
-    getAll
-      .mockReset()
-      .mockImplementation(() => schemas);
-    remove
-      .mockReset();
+    getAll.mockReset().mockImplementation(() => schemas);
+    remove.mockReset();
     return { getAll, remove };
   }
 
   function mockSchemas() {
     const schemaDefault = {
       ...new SchemaDefault(1),
-      exercises: [new ExerciseDefault()]
+      exercises: [new ExerciseDefault()],
     };
     return new Autofixture().createMany<Schema>(schemaDefault);
   }

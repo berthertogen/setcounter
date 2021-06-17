@@ -1,7 +1,7 @@
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { render } from '@testing-library/angular'
-import userEvent from '@testing-library/user-event'
+import { render } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
 import { MaterialModule } from 'src/app/material.module';
 import { ExerciseDefault, Schema, SchemaDefault } from 'src/app/schemas/schema/schema';
 import { Autofixture } from 'ts-autofixture/dist/src';
@@ -70,13 +70,13 @@ describe('CreateComponent - overall', () => {
       pauseReps: 30,
       intervalReps: 15,
       intervalDuration: 20,
-      intervalPause: 10
+      intervalPause: 10,
     });
     navigatedToList();
   });
 
   test('should call schemasService add when save schema is clicked', async () => {
-    const { click, clickByTitle, changeSlider, schemasSaved, schemas, navigatedToList } = await createComponentWithSchemas();
+    const { click, clickByTitle, changeSlider, schemasSaved, navigatedToList } = await createComponentWithSchemas();
 
     changeSlider('Warmup duration (sec)', 2);
 
@@ -108,7 +108,7 @@ describe('CreateComponent - overall', () => {
       pauseReps: 30,
       intervalReps: 15,
       intervalDuration: 20,
-      intervalPause: 10
+      intervalPause: 10,
     };
     schemasSaved(1, schema);
     navigatedToList();
@@ -117,7 +117,7 @@ describe('CreateComponent - overall', () => {
   test('should navigate to list when cancel is clicked', async () => {
     const { click, navigatedToList } = await createComponent();
 
-    click("Cancel");
+    click('Cancel');
 
     navigatedToList();
   });
@@ -137,8 +137,8 @@ describe('CreateComponent - overall', () => {
       imports: [FormsModule, MaterialModule],
       providers: [
         { provide: Router, useValue: router },
-        { provide: SchemasService, useValue: { add } }
-      ]
+        { provide: SchemasService, useValue: { add } },
+      ],
     });
     return {
       ...rendered,
@@ -165,7 +165,7 @@ describe('CreateComponent - overall', () => {
       schemasSaved: (times: number, schemas: Schema) => {
         expect(add).toHaveBeenNthCalledWith(times, schemas);
       },
-      navigatedToList: () => expect(router.navigate).toHaveBeenNthCalledWith(1, ['schemas', 'list'])
+      navigatedToList: () => expect(router.navigate).toHaveBeenNthCalledWith(1, ['schemas', 'list']),
     };
   }
 
@@ -178,7 +178,7 @@ describe('CreateComponent - overall', () => {
   function mockSchemas() {
     const schemaDefault = {
       ...new SchemaDefault(),
-      exercises: [new ExerciseDefault()]
+      exercises: [new ExerciseDefault()],
     };
     return new Autofixture().createMany<Schema>(schemaDefault);
   }
