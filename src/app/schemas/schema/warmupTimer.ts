@@ -1,13 +1,13 @@
-import { DateTime } from 'luxon';
+import { Duration } from 'luxon';
 
 export interface WarmupTimer {
-  time: DateTime;
+  time: Duration;
   percent: number;
   status: 'stopped' | 'running' | 'paused';
 }
 
 export class WarmupTimerDefault implements WarmupTimer {
-  time = DateTime.fromSeconds(0);
+  time = Duration.fromMillis(0);
   percent = 100;
   status: 'stopped' | 'running' | 'paused' = 'stopped';
 }

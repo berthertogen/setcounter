@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { ComponentStore, tapResponse } from '@ngrx/component-store';
-import { DateTime } from 'luxon';
+import { Duration } from 'luxon';
 import { Observable } from 'rxjs';
-import { filter, map, switchMap, takeUntil } from 'rxjs/operators';
+import { filter, map, switchMap, takeWhile } from 'rxjs/operators';
 import { SchemasService } from '../../schemas.service';
 import { Schema, SchemaDefault } from '../schema';
 import { WarmupTimer, WarmupTimerDefault } from '../warmupTimer';
@@ -22,29 +22,25 @@ export class RunStore extends ComponentStore<RunState> {
   }
 
   readonly warmupTimer$: Observable<WarmupTimer> = this.select((state) => state.warmupTimer);
-  readonly timerPaused$: Observable<boolean> = this.select((state) => state.warmupTimer.status).pipe(
-    filter(status => status === 'paused'),
-    map(_ => true)
-  );
 
-  readonly setSchema = (schema: Schema): void =>
-    this.patchState({
-      schema,
-      warmupTimer: { time: this.toDateTime(schema.warmup * 60), percent: 100, status: 'stopped' },
-    });
-
-  readonly startWarmup = this.effect((ellapsed$: Observable<number>) => {
+  readonly setupWarmupTimer = this.effect((ellapsed$: Observable<number>) => {
     return ellapsed$.pipe(
-      takeUntil(this.timerPaused$),
-      tapResponse(
-        (ellapsed) =>
-          this.patchState((state) => ({
-            warmupTimer: this.calculateEllapsed(state.schema.warmup, ellapsed),
-          })),
+      takeWhile(() => this.get((state) => state.warmupTimer.status === "running")),
+      tapResponse(() =>
+        this.patchState((state) => ({
+          warmupTimer: this.ellapsed(state.schema.warmup, state.warmupTimer.time),
+        })),
         (error) => this.logError(error)
       )
     );
   });
+
+  readonly startWarmup = (): void => this.patchState((state) => ({
+    warmupTimer: {
+      ...state.warmupTimer,
+      status: 'running'
+    }
+  }));
 
   readonly pauseWarmup = (): void => this.patchState((state) => ({
     warmupTimer: {
@@ -68,12 +64,19 @@ export class RunStore extends ComponentStore<RunState> {
     );
   });
 
-  private calculateEllapsed = (warmup: number, ellapsed: number): WarmupTimer => {
-    const warmupSeconds = warmup * 60;
-    const time = this.toDateTime(warmupSeconds - (ellapsed + 1));
-    const percent = 100 - (100 * ellapsed) / warmupSeconds - 1;
+  private readonly setSchema = (schema: Schema): void =>
+    this.patchState({
+      schema,
+      warmupTimer: { time: this.toDateTime(schema.warmup * 60), percent: 100, status: 'stopped' },
+    });
+
+  private ellapsed = (warmup: number, time: Duration): WarmupTimer => {
+    time = time.minus({ seconds: 1 });
+    const totalSeconds = warmup * 60;
+    const ellapsedSeconds = (time.toMillis() / 1000);
+    const percent = ellapsedSeconds / totalSeconds * 100;
     return { time, percent, status: 'running' };
   };
   private logError = (e: unknown) => console.error(e);
-  private toDateTime = (seconds: number): DateTime => DateTime.fromSeconds(seconds);
+  private toDateTime = (seconds: number): Duration => Duration.fromMillis(seconds * 1000);
 }

@@ -55,7 +55,7 @@ describe('RunComponent', () => {
     jest.runOnlyPendingTimers();
   });
 
-  test('should stop counting when pause is clicked', async () => {
+  test('should stop counting when pause is clicked and resume when start is clicked again', async () => {
     jest.useFakeTimers();
     const { clickTitle, hasDigitalClockWithTicks, isDisabled, isEnabled, detectChanges, schemas } = await createComponent();
 
@@ -63,6 +63,7 @@ describe('RunComponent', () => {
     jest.advanceTimersByTime(3000);
     detectChanges();
     hasDigitalClockWithTicks(schemas[0].warmup, 4);
+
     clickTitle("Pauze");
     isEnabled('Start');
     isDisabled('Pauze');
@@ -70,6 +71,14 @@ describe('RunComponent', () => {
     jest.advanceTimersByTime(3000);
     detectChanges();
     hasDigitalClockWithTicks(schemas[0].warmup, 4);
+
+    clickTitle("Start");
+    isDisabled('Start');
+    isEnabled('Pauze');
+    isEnabled('Reset');
+    jest.advanceTimersByTime(3000);
+    detectChanges();
+    hasDigitalClockWithTicks(schemas[0].warmup, 8);
 
     jest.runOnlyPendingTimers();
   });
