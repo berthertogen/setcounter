@@ -28,4 +28,9 @@ export class SchemasRunComponent {
     this.timerSub.unsubscribe();
     this.runStore.pauseWarmup();
   }
+
+  resetWarmup(): void {
+    this.timerSub.unsubscribe();
+    this.runStore.resetWarmup();
+  }
 }

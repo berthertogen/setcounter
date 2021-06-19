@@ -49,6 +49,10 @@ export class RunStore extends ComponentStore<RunState> {
     }
   }));
 
+  readonly resetWarmup = (): void => this.patchState((state) => ({
+    warmupTimer: new WarmupTimerDefault(state.schema.warmup)
+  }));
+
   readonly getSchema = this.effect((schemaId$: Observable<string | null>) => {
     return schemaId$.pipe(
       filter((schemaId) => !!schemaId),

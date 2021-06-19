@@ -17,7 +17,7 @@
           [disabled]="warmupTimer.status === 'stopped' || warmupTimer.status === 'paused'">
           <mat-icon>pause</mat-icon>Pauze
         </button>
-        <button mat-button title="Reset" [disabled]="warmupTimer.status === 'stopped'">
+        <button mat-button title="Reset" (click)="resetWarmup()" [disabled]="warmupTimer.status === 'stopped'">
           <mat-icon>replay</mat-icon>Reset
         </button>
       </div>

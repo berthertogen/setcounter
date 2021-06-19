@@ -83,6 +83,36 @@ describe('RunComponent', () => {
     jest.runOnlyPendingTimers();
   });
 
+  test('should reset timer when reset is clicked and stop if was running', async () => {
+    jest.useFakeTimers();
+    const { clickTitle, hasDigitalClockWithTicks, isDisabled, isEnabled, detectChanges, schemas } = await createComponent();
+
+    clickTitle("Start");
+    jest.advanceTimersByTime(3000);
+    detectChanges();
+    hasDigitalClockWithTicks(schemas[0].warmup, 4);
+
+    clickTitle("Reset");
+    isEnabled('Start');
+    isDisabled('Pauze');
+    isDisabled('Reset');
+    jest.advanceTimersByTime(3000);
+    detectChanges();
+    hasDigitalClockWithTicks(schemas[0].warmup, 0);
+
+    clickTitle("Start");
+    jest.advanceTimersByTime(3000);
+    detectChanges();
+    hasDigitalClockWithTicks(schemas[0].warmup, 4);
+    clickTitle("Pauze");
+    clickTitle("Reset");
+    jest.advanceTimersByTime(3000);
+    detectChanges();
+    hasDigitalClockWithTicks(schemas[0].warmup, 0);
+
+    jest.runOnlyPendingTimers();
+  });
+
   afterAll(() => {
     jest.useRealTimers();
   });
