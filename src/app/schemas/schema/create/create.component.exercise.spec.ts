@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { MaterialModule } from 'src/app/material.module';
-import { Schema } from 'src/app/schemas/schema/schema';
 import { SchemasCreateComponent } from './create.component';
 
 describe('CreateComponent - exercises', () => {

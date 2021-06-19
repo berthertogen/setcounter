@@ -57,14 +57,15 @@ describe('RunComponent', () => {
 
   test('should stop counting when pause is clicked and resume when start is clicked again', async () => {
     jest.useFakeTimers();
-    const { clickTitle, hasDigitalClockWithTicks, isDisabled, isEnabled, detectChanges, schemas } = await createComponent();
+    const { clickTitle, hasDigitalClockWithTicks, isDisabled, isEnabled, detectChanges, schemas } =
+      await createComponent();
 
-    clickTitle("Start");
+    clickTitle('Start');
     jest.advanceTimersByTime(3000);
     detectChanges();
     hasDigitalClockWithTicks(schemas[0].warmup, 4);
 
-    clickTitle("Pauze");
+    clickTitle('Pauze');
     isEnabled('Start');
     isDisabled('Pauze');
     isEnabled('Reset');
@@ -72,7 +73,7 @@ describe('RunComponent', () => {
     detectChanges();
     hasDigitalClockWithTicks(schemas[0].warmup, 4);
 
-    clickTitle("Start");
+    clickTitle('Start');
     isDisabled('Start');
     isEnabled('Pauze');
     isEnabled('Reset');
@@ -85,14 +86,15 @@ describe('RunComponent', () => {
 
   test('should reset timer when reset is clicked and stop if was running', async () => {
     jest.useFakeTimers();
-    const { clickTitle, hasDigitalClockWithTicks, isDisabled, isEnabled, detectChanges, schemas } = await createComponent();
+    const { clickTitle, hasDigitalClockWithTicks, isDisabled, isEnabled, detectChanges, schemas } =
+      await createComponent();
 
-    clickTitle("Start");
+    clickTitle('Start');
     jest.advanceTimersByTime(3000);
     detectChanges();
     hasDigitalClockWithTicks(schemas[0].warmup, 4);
 
-    clickTitle("Reset");
+    clickTitle('Reset');
     isEnabled('Start');
     isDisabled('Pauze');
     isDisabled('Reset');
@@ -100,12 +102,12 @@ describe('RunComponent', () => {
     detectChanges();
     hasDigitalClockWithTicks(schemas[0].warmup, 0);
 
-    clickTitle("Start");
+    clickTitle('Start');
     jest.advanceTimersByTime(3000);
     detectChanges();
     hasDigitalClockWithTicks(schemas[0].warmup, 4);
-    clickTitle("Pauze");
-    clickTitle("Reset");
+    clickTitle('Pauze');
+    clickTitle('Reset');
     jest.advanceTimersByTime(3000);
     detectChanges();
     hasDigitalClockWithTicks(schemas[0].warmup, 0);

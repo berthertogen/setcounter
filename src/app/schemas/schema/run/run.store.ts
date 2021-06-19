@@ -25,33 +25,37 @@ export class RunStore extends ComponentStore<RunState> {
 
   readonly setupWarmupTimer = this.effect((ellapsed$: Observable<number>) => {
     return ellapsed$.pipe(
-      takeWhile(() => this.get((state) => state.warmupTimer.status === "running")),
-      tapResponse(() =>
-        this.patchState((state) => ({
-          warmupTimer: this.ellapsed(state.schema.warmup, state.warmupTimer.time),
-        })),
+      takeWhile(() => this.get((state) => state.warmupTimer.status === 'running')),
+      tapResponse(
+        () =>
+          this.patchState((state) => ({
+            warmupTimer: this.ellapsed(state.schema.warmup, state.warmupTimer.time),
+          })),
         (error) => this.logError(error)
       )
     );
   });
 
-  readonly startWarmup = (): void => this.patchState((state) => ({
-    warmupTimer: {
-      ...state.warmupTimer,
-      status: 'running'
-    }
-  }));
+  readonly startWarmup = (): void =>
+    this.patchState((state) => ({
+      warmupTimer: {
+        ...state.warmupTimer,
+        status: 'running',
+      },
+    }));
 
-  readonly pauseWarmup = (): void => this.patchState((state) => ({
-    warmupTimer: {
-      ...state.warmupTimer,
-      status: 'paused'
-    }
-  }));
+  readonly pauseWarmup = (): void =>
+    this.patchState((state) => ({
+      warmupTimer: {
+        ...state.warmupTimer,
+        status: 'paused',
+      },
+    }));
 
-  readonly resetWarmup = (): void => this.patchState((state) => ({
-    warmupTimer: new WarmupTimerDefault(state.schema.warmup)
-  }));
+  readonly resetWarmup = (): void =>
+    this.patchState((state) => ({
+      warmupTimer: new WarmupTimerDefault(state.schema.warmup),
+    }));
 
   readonly getSchema = this.effect((schemaId$: Observable<string | null>) => {
     return schemaId$.pipe(
@@ -77,8 +81,8 @@ export class RunStore extends ComponentStore<RunState> {
   private ellapsed = (warmup: number, time: Duration): WarmupTimer => {
     time = time.minus({ seconds: 1 });
     const totalSeconds = warmup * 60;
-    const ellapsedSeconds = (time.toMillis() / 1000);
-    const percent = ellapsedSeconds / totalSeconds * 100;
+    const ellapsedSeconds = time.toMillis() / 1000;
+    const percent = (ellapsedSeconds / totalSeconds) * 100;
     return { time, percent, status: 'running' };
   };
   private logError = (e: unknown) => console.error(e);

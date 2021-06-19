@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Observable, of, Subscription, timer } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { Observable, Subscription, timer } from 'rxjs';
 import { WarmupTimer } from '../warmupTimer';
 import { RunStore } from './run.store';
 
