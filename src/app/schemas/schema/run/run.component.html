@@ -1,4 +1,4 @@
-<mat-vertical-stepper [linear]="true" #stepper>
+<mat-vertical-stepper [linear]="false" #stepper>
   <mat-step>
     <ng-container *ngIf="warmupTimer$ | async as warmupTimer">
       <form>
@@ -36,7 +36,9 @@
         </button>
       </div>
     </ng-container>
-    <button mat-raised-button color="primary" matStepperNext title="Start exercises">Start exercises</button>
+    <button mat-raised-button color="primary" matStepperNext title="Start exercises" class="btn-next">
+      Start exercises
+    </button>
   </mat-step>
   <mat-step>
     <form>
