@@ -31,7 +31,6 @@ jobs:
           azcliversion: 2.0.72
           inlineScript: |
             az cdn endpoint purge --content-paths  "/*" --profile-name "resume-cdn" --name "setcounter" --resource-group "resume"
-        Azure logout 
       - name: logout
         run: |
               az logout
