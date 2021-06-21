@@ -1,4 +1,7 @@
 <mat-toolbar color="primary">
   <span>Schema's</span>
+  <button mat-icon-button title="Schema's" [routerLink]="['schemas', 'list']">
+    <mat-icon>home</mat-icon>
+  </button>
 </mat-toolbar>
 <router-outlet></router-outlet>
