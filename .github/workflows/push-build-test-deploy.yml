@@ -16,21 +16,5 @@ jobs:
         with:
           install: false
           start: npm start
-      - uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }} 
-      - name: Upload to blob storage
-        uses: azure/CLI@v1
-        with:
-          azcliversion: 2.0.72
-          inlineScript: |
-              az storage blob upload-batch --account-name setcounter -d '$web' -s ./dist/setcounter
-      - name: Purge CDN endpoint
-        uses: azure/CLI@v1
-        with:
-          azcliversion: 2.0.72
-          inlineScript: |
-            az cdn endpoint purge --content-paths  "/*" --profile-name "resume-cdn" --name "setcounter" --resource-group "resume"
-      - name: logout
-        run: |
-              az logout
+      - name: Build the docker-compose stack
+        run: docker-compose up --build --detach
