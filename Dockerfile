@@ -3,9 +3,12 @@ FROM node:alpine AS build
 WORKDIR /app
 COPY ["package.json", "package-lock.json*", "./"]
 RUN npm ci --ignore-scripts
+
 COPY . .
 RUN npm run test
-# RUN npm run e2e
+RUN npm run start & wait-on http://localhost:4200
+RUN npm run e2e
+
 RUN npm run build:production
 
 FROM nginx:alpine
