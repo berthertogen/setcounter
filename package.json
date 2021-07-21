@@ -12,8 +12,7 @@
     "lint": "ng lint --fix",
     "prettier": "prettier --write",
     "e2e:open": "ng run setcounter:cypress-open",
-    "e2e": "npm run start & npx wait-on -d 20000 -i 1000 -v http://localhost:4200 && cypress run",
-    "postinstall": "husky install && husky add .husky/pre-commit \"npx lint-staged\""
+    "e2e": "npm run start & npx wait-on -d 20000 -i 1000 -v http://localhost:4200 && cypress run"
   },
   "lint-staged": {
     "*.{js,json,css,scss,md,ts,html}": [
