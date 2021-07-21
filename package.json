@@ -11,7 +11,8 @@
     "test:watch": "jest --watchAll",
     "lint": "ng lint --fix",
     "prettier": "prettier --write",
-    "e2e": "ng run setcounter:cypress-open",
+    "e2e:open": "ng run setcounter:cypress-open",
+    "e2e": "cypress run",
     "postinstall": "husky install && husky add .husky/pre-commit \"npx lint-staged\""
   },
   "lint-staged": {
