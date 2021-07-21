@@ -5,16 +5,5 @@ jobs:
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          check-latest: true
-      - run: npm ci
-      - run: npm run build
-      - run: npm run test
-      - name: Cypress run
-        uses: cypress-io/github-action@v2
-        with:
-          install: false
-          start: npm start
       - name: Build the docker-compose stack
         run: docker-compose up --build --detach
